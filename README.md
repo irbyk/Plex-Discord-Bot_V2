@@ -37,13 +37,13 @@ If I am missing any steps, feel free to reach out or open  an issue/bug in the I
 ## Docker
 If you are using docker, you can use these commands to build and start your Plex bot :
 
-go to your plx bot folder (`cd your/plex/bot/folder`)
+go to your plex bot folder (`cd your/plex/bot/folder`)
 
 `docker build -t image/plexbot .`
 
 `docker run -p 32400 -d --name plexbot image/plexbot`
 
-wait few seconds and your bot should join your server and be active.
+wait a few seconds and your bot should join your server and be active.
 You can use `docker logs plexbot` to see the log of the bot (use `docker logs -f plexbot` if you want realtime log).
 
 Note : you may need the `sudo` command/admin access depending of your user right.
