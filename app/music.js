@@ -16,7 +16,8 @@ module.exports = function(client) {
     
       var msg = message.content.toLowerCase();
       if (msg.startsWith(config.caracteres_commande)){
-        if(!message.channel.name && message.channel.name == config.canal_ecoute) {
+        // à changer...
+        if(true || !message.channel.name && message.channel.name == config.canal_ecoute) {
             var cmdTxt = msg.split(" ")[0].substring(config.caracteres_commande.length, msg.length);
             var query = msg.substring(cmdTxt.length+2);
             if(cmdTxt == "?") {
