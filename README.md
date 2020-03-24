@@ -3,13 +3,16 @@ He should have all the credit for starting this project.
 # Plex Discord Bot
 
 ## Installation
+1. Clone the repo or download a zip and unpackage it.
 
-1. Install Node.js: https://nodejs.org/
-2. If using Windows, I generally install Cmder as a console emulator to avoid issues: http://cmder.net/
-3. Clone the repo or download a zip and unpackage it.
-4. Navigate to the root folder and in the console, type `npm install`
+If you to use docker, skip the points 2 and 3.
+
+2. Install Node.js: https://nodejs.org/
+3. Navigate to the root folder and in the console, type `npm install`
     * You should see packages beginning to install
-5. Once this is complete, go here: https://discordapp.com/developers/applications/me
+
+
+4. Once this is complete, go here: https://discordapp.com/developers/applications/me
     1. Log in or create an account
     2. Click **New App**
     3. Fill in App Name and anything else you'd like to include
@@ -17,25 +20,27 @@ He should have all the credit for starting this project.
         * This will provide you with your Client ID and Client Secret
     5. Click **Create Bot User**
         * This will provide you with your bot Username and Token
-6. Take all of the information from the page and enter it into the `config/keys.js` file, replacing the placeholders.
-7. Navigate to the `config/plex.js` file and replace the placeholders with your Plex Server information
+5. Take all of the information from the page and enter it into the `config/keys.js` file, replacing the placeholders.
+6. Navigate to the `config/plex.js` file and replace the placeholders with your Plex Server information
     1. To get your token, following the instructions here: https://support.plex.tv/hc/en-us/articles/204059436-Finding-an-authentication-token-X-Plex-Token
     2. To get your machineId or "machineIdentifier", follow the instructions here: https://support.plex.tv/hc/en-us/articles/201638786-Plex-Media-Server-URL-Commands
         * In the first example under "Base Server Capabilities", you can see the information returned when you type `http://[PMS_IP_Address]:32400/?X-Plex-Token=YourTokenGoesHere` into your address bar of a web browser.  Copy everything between the quotes for the parameter "machineIdentifier" and paste it into the "machineId" property in `config/plex.js`
     3. The identifier, product, version, and deviceName can be anything you want
-8. Once you have the configs set up correctly, you'll need to authorize your bot on a server you have administrative access to.  For documentation, you can read: https://discordapp.com/developers/docs/topics/oauth2#bots.  The steps are as follows:
+7. Once you have the configs set up correctly, you'll need to authorize your bot on a server you have administrative access to.  For documentation, you can read: https://discordapp.com/developers/docs/topics/oauth2#bots.  The steps are as follows:
     1. Go to `https://discordapp.com/api/oauth2/authorize?client_id=[CLIENT_ID]&scope=bot&permissions=1` where [CLIENT_ID] is the Discord App Client ID
     2. Select **Add a bot to a server** and select the server to add it to
     3. Click **Authorize**
     4. You should now see your bot in your server listed as *Offline*
-9. To bring your bot *Online*, navigate to the root of the app (where `index.js` is located) and in your console, type `node index.js`
+If want want to use Docker, just go to the Docker section.
+
+8. To bring your bot *Online*, navigate to the root of the app (where `index.js` is located) and in your console, type `node index.js`
     * This will start your server.  The console will need to be running for the bot to run.
 
 If I am missing any steps, feel free to reach out or open  an issue/bug in the Issues for this repository.
 
 ***
 ## Docker
-If you are using docker, you can use these commands to build and start your Plex bot :
+If you are using docker, you can use these commands to build and start your Plex bot (after downloading the source code and set the config file) :
 
 go to your plex bot folder (`cd your/plex/bot/folder`)
 
