@@ -73,7 +73,7 @@ Note : you may need the `sudo` command/admin access depending of your user right
 * `!skip` : skips the current song if one is playing and plays the next song in queue if it exists.
 * `!stop` : stops song if one is playing.
 * `!viewqueue` : displays current song queue.
-
+* `!playlist ?` : displays all the playlist related commands.
 ***
 ## Customization
 
