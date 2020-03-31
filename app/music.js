@@ -1,24 +1,22 @@
-module.exports = function(client) {
+module.exports = function(client, bot) {
   // plex commands -------------------------------------------------------------
-  var plexCommands = require('../commands/plex');
-  var config = require('../config/config');
-
+  var plexCommands = require('../commands');
   // when bot is ready
   client.on('ready', function() {
     console.log('bot ready');
     console.log('logged in as: ' + client.user.tag);
 
-    plexCommands['plextest'].process();
+    plexCommands['plextest'].process(bot);
   });
 
   // when message is sent to discord
   client.on('message', function(message){
     
-      var msg = message.content.toLowerCase();
-      if (msg.startsWith(config.caracteres_commande)){
-        // à changer...
-        if(true || !message.channel.name && message.channel.name == config.canal_ecoute) {
-            var cmdTxt = msg.split(" ")[0].substring(config.caracteres_commande.length, msg.length);
+      var msg = message.content;//.toLowerCase();
+      
+      if (msg.startsWith(bot.config.caracteres_commande)){
+        if(bot.config.canal_ecoute == '' || message.channel.name == bot.config.canal_ecoute) {
+            var cmdTxt = msg.split(" ")[0].substring(bot.config.caracteres_commande.length, msg.length).toLowerCase();
             var query = msg.substring(cmdTxt.length+2);
             if(cmdTxt == "?") {
               if(query) {
@@ -27,8 +25,7 @@ module.exports = function(client) {
                 if(cmdAide) {
                   cmdAide.usage(message, cmdTxtAide.slice(1));
                 } else{*/
-                  message.reply('this command doesn\'t exist.\n\
-                  Type \"' + config.caracteres_commande + '?\" to get some help :wink:.');
+                  message.reply(bot.language.MUSIC_HELP_1.format({caracteres_commande : bot.config.caracteres_commande}),{tts: true});
                 //}
                 return ;
               }
@@ -39,12 +36,12 @@ module.exports = function(client) {
                               fields:
                               [
                                   {
-                                      name: 'Commande',
-                                      value: config.caracteres_commande + command + ' ' + plexCommands[command].usage,
+                                      name: bot.language.COMMAND,
+                                      value: bot.config.caracteres_commande + command + ' ' + plexCommands[command].usage,
                                       inline: true
                                   },
                                   {
-                                      name: 'Description',
+                                      name: bot.language.DESCRIPTION,
                                       value: plexCommands[command].description,
                                       inline: true
                                   }
@@ -63,14 +60,14 @@ module.exports = function(client) {
             
             if (cmd){
               try {
-                cmd.process(client, message, query);
+                cmd.process(bot, client, message, query);
               }
               catch (e) {
                 console.log(e);
               }
             }
             else {
-              message.reply('**sorry \"' + cmdTxt + '\" is not a valid command :cry:.**');
+              message.reply(bot.language.MUSIC_UNKNOW_COMMAND.format({cmdTxt : cmdTxt}));
             }
         }
       }
