@@ -115,8 +115,11 @@ If you see any bugs or have any suggestions, use the issue tracker.  Thanks!
 ***
 
 ## To Do:
-* [ ] Change all the french to english ^^'.
+* ????
 ```
 
 ## Completed:
-* [x] add github repository :).
+* [x] youtube command.
+* [x] refactor the code base.
+* [x] add language support.
+* [x] Change all the french to english ^^'.
