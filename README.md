@@ -109,7 +109,7 @@ module.exports= {
   }
 };
 ```
-
+You can find us on Discord : https://discord.gg/RaArrx
 If you see any bugs or have any suggestions, use the issue tracker.  Thanks!
 
 ***
