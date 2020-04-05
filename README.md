@@ -110,8 +110,9 @@ module.exports= {
 };
 ```
 You can find us on Discord : https://discord.gg/c39aRhB
+Join it if you want to discuss or have any suggestions.
 
-If you see any bugs or have any suggestions, use the issue tracker.  Thanks!
+If you see any bugs use the issue tracker.  Thanks!
 
 ***
 
