@@ -7,7 +7,7 @@ module.exports = {
       let messageLines = '';
       if (bot.songQueue.length > 0) {
         for (let t = 0; t < bot.songQueue.length; t++) {
-          messageLines += bot.language.VIEWQUEUE_SONG_INFO.format({index : t+1, artist : bot.songQueue[t].artist,tilte : bot.songQueue[t].title});
+          messageLines += bot.language.VIEWQUEUE_SONG_INFO.format({index : t+1, artist : bot.songQueue[t].artist,title : bot.songQueue[t].title})+'\n';
         }
         messageLines += bot.language.VIEWQUEUE_INFO.format({caracteres_commande : bot.config.caracteres_commande}) ;
         var embedObj = {

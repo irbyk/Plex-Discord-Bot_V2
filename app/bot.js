@@ -4,6 +4,8 @@ const fs = require('fs');
 const readline = require('readline');
 const ytdl = require('ytdl-core');
 const config = require('../config/config');
+const xml2json = require('xml2js');
+const request = require('request');
 const language = require('../'+config.language);
   // plex constants ------------------------------------------------------------
 const plexConfig = require('../config/plex');
@@ -51,8 +53,8 @@ var Bot = function() {
 };
 
   // find song when provided with query string, offset, pagesize, and message
-Bot.prototype.findTracksOnPlex = async function(query, offset, pageSize) {
-  return await this.plex.query('/search/?type=10&query=' + query + '&X-Plex-Container-Start=' + offset + '&X-Plex-Container-Size=' + pageSize);
+Bot.prototype.findTracksOnPlex = async function(query, offset, pageSize, type = 10) {
+  return await this.plex.query('/search/?type=' + type + '&query=' + query + '&X-Plex-Container-Start=' + offset + '&X-Plex-Container-Size=' + pageSize);
 };
 
 Bot.prototype.findOneSongOnPlex = async function(query) {
@@ -90,6 +92,41 @@ Bot.prototype.jouerUneMusique = async function(musique, vChannel, callback) {
   self.dispatcher.setVolume(self.volume);
   return self.dispatcher;
 };
+
+Bot.prototype.findPlaylist = function(query, message) {
+  let self = this;
+  self.findTracksOnPlex(query, 0, 10, 15).then(function(res) {
+    let key = res.MediaContainer.Metadata[0].key;
+    let url = PLEX_PLAY_START + key + PLEX_PLAY_END;
+    self.loadPlaylist(url, message);
+  });
+}
+
+Bot.prototype.loadPlaylist = function(url, message) {
+  let self = this;
+  request(url, (err, res, body) => {
+    xml2json.parseString(body.toString('utf8'), {}, (err, jsonObj) => {
+      let res = jsonObj;
+      let tracks = jsonObj.MediaContainer.Track;
+      let resultSize = res.MediaContainer.$.size;
+
+      for (let i = 0; i < resultSize;i++) {
+        let track = tracks[i].$
+        let key = tracks[i].Media[0].Part[0].$.key;
+        let title = track.title;
+        let artist = '';
+        if ('originalTitle' in track) {
+          artist = track.originalTitle;
+        }
+        else {
+          artist = track.grandparentTitle;
+        }
+        self.songQueue.push({'artist' : artist, 'title': title, 'key': key});
+      }
+      self.encoreDuTravail(message);
+    });
+  });
+}
 
 Bot.prototype.findSong = function(query, offset, pageSize, message) {
     let self = this;
