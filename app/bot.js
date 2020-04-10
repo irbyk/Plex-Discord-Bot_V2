@@ -57,23 +57,92 @@ Bot.prototype.findTracksOnPlex = async function(query, offset, pageSize, type = 
   return await this.plex.query('/search/?type=' + type + '&query=' + query + '&X-Plex-Container-Start=' + offset + '&X-Plex-Container-Size=' + pageSize);
 };
 
+Bot.prototype.loadMood = async function(name) {
+  let self = this;
+  self.cache_library[name].mood = {};
+  let res = await self.plex.query('/library/sections/' + self.cache_library[name].key + '/mood?type=10');
+  for(let mood of res.MediaContainer.Directory) {
+    self.cache_library[name].mood[mood.title] = {key : mood.key, url : '/library/sections/' + self.cache_library[name].key + '/all?type=10&mood=' + mood.key};
+  }
+}
+
+Bot.prototype.loadLibrary = async function() {
+  let self = this;
+  self.cache_library = {};
+  let res = await this.plex.query('/library/sections');
+  for(let library of res.MediaContainer.Directory){
+    if(library.type == 'artist'){
+      self.cache_library[library.title] = {key : library.key, mood : {}};
+      await self.loadMood(library.title);
+    }
+  }
+  
+}
+
+Bot.prototype.findMood = async function(libraryName, moodName, message){
+  let self = this;
+  if(!self.cache_library[libraryName]) {
+    await self.loadLibrary();
+    if(!self.cache_library[libraryName]) {
+      message.reply('I didn\'t find the library :cry:.')
+      return;
+    }
+  }
+  if(!self.cache_library[libraryName].mood[moodName]){
+    await self.loadMood(libraryName);
+    await self.loadLibrary();
+    if(!self.cache_library[libraryName]) {
+      message.reply('I didn\'t find the mood :cry:.')
+      return;
+    }
+  }
+  return !self.cache_library[libraryName].mood[moodName];
+};
+
+Bot.prototype.playOneMood = async function(moodName, message){
+  if(Object.keys(this.cache_library).length == 0){
+    await this.loadLibrary();
+  }
+  musics = [];
+  for (let library of Object.values(this.cache_library)){
+    if(library.mood[moodName]) {
+      let res = await this.plex.query(library.mood[moodName].url)
+      for(let track of res.MediaContainer.Metadata){
+        musics.push(this.trackToMusic(track, true));
+      }
+    }
+  }
+  let musicChosen = musics[Math.floor(Math.random() * Math.floor(musics.length))];
+  this.songQueue.push(musicChosen);
+  if(!this.isPlaying){
+    this.playSong(message);
+  } else {
+    message.reply(language.BOT_ADDTOQUEUE_SUCCES.format({artist : musicChosen.artist, title : musicChosen.title}));
+  }
+}
+
+Bot.prototype.trackToMusic = function(track, repeat = false) {
+  let key = track.Media[0].Part[0].key;
+  let artist = '';
+  let title = track.title;
+  if ('originalTitle' in track) {
+    artist = track.originalTitle;
+  }
+  else {
+    artist = track.grandparentTitle;
+  }
+  return {'artist' : artist, 'title': title, 'key': key};
+};
+
 Bot.prototype.findOneSongOnPlex = async function(query) {
-  let res = await this.findTracksOnPlex(query, 0, 1);
+  let res = await this.findTracksOnPlex(query, 0, 1, 10);
+  
   let liste = res.MediaContainer.Metadata;
   let taille = res.MediaContainer.size;
   if (taille < 1) {
       throw "La musique n'a pas été trouvée.";
   }
-  let key = liste[0].Media[0].Part[0].key;
-  let artist = '';
-  let title = liste[0].title;
-  if ('originalTitle' in liste[0]) {
-    artist = liste[0].originalTitle;
-  }
-  else {
-    artist = liste[0].grandparentTitle;
-  }
-  return {'artist' : artist, 'title': title, 'key': key};
+  return this.trackToMusic(liste[0]);
 };
 
 Bot.prototype.jouerUneMusique = async function(musique, vChannel, callback) {
@@ -209,44 +278,53 @@ Bot.prototype.playSong = function(message) {
       }
       self.isPlaying = true;
       self.dispatcher = connection.play(url).on('finish', () => {
-        self.songQueue.shift();
         if (self.songQueue.length > 0) {
-          self.playSong(message);
-        }
-        // no songs left in queue, continue with playback completetion events
-        else {
-            self.playbackCompletion(message);
-        }
+          if(self.songQueue[0].replay) {
+            self.songQueue[0].played = true;
+            self.playSong(message);
+          } else {
+            self.songQueue.shift();
+            if (self.songQueue.length > 0) {
+              self.playSong(message);
+            }
+            // no songs left in queue, continue with playback completetion events
+            else {
+                self.playbackCompletion(message);
+            }
+          }
+        } else {
+              self.playbackCompletion(message);
+          }
+      }).on('start', () => {
+          if(!self.songQueue[0].played) {
+            var embedObj = {
+              embed: {
+                color: 4251856,
+                fields:
+                [
+                  {
+                    name: language.ARTIST,
+                    value: self.songQueue[0].artist,
+                    inline: true
+                  },
+                  {
+                    name: language.TITLE,
+                    value: self.songQueue[0].title,
+                    inline: true
+                  }
+                ],
+                footer: {
+                  text: language.NUMBER_MUSIC_IN_QUEUE.format({number : self.songQueue.length, plurial : (self.songQueue.length > 1 ? 's' : '')})
+                },
+              }
+            };
+            if(!self.termine) {
+              message.channel.send(language.BOT_PLAYSONG_SUCCES, embedObj);
+            }
+          }
       });
       self.dispatcher.setVolume(self.volume);
     });
-
-    // probbaly just change this to channel alert, not reply
-    var embedObj = {
-      embed: {
-        color: 4251856,
-        fields:
-        [
-          {
-            name: language.ARTIST,
-            value: self.songQueue[0].artist,
-            inline: true
-          },
-          {
-            name: language.TITLE,
-            value: self.songQueue[0].title,
-            inline: true
-          }
-        ],
-        footer: {
-          text: language.NUMBER_MUSIC_IN_QUEUE.format({number : self.songQueue.length, plurial : (self.songQueue.length > 1 ? 's' : '')})
-        },
-      }
-    };
-    if(!self.termine) {
-      message.channel.send(language.BOT_PLAYSONG_SUCCES, embedObj);
-    }
-    //message.channel.send('**♪ ♫ ♪ Playing: ' + songQueue[0].artist + ' - ' + songQueue[0].title + ' ♪ ♫ ♪**');
   }
   else {
     message.reply(language.BOT_PLAYSONG_FAIL)
