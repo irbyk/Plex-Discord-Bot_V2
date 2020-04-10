@@ -27,7 +27,7 @@ If you to use docker, skip the points 2 and 3.
         * In the first example under "Base Server Capabilities", you can see the information returned when you type `http://[PMS_IP_Address]:32400/?X-Plex-Token=YourTokenGoesHere` into your address bar of a web browser.  Copy everything between the quotes for the parameter "machineIdentifier" and paste it into the "machineId" property in `config/plex.js`
     3. The identifier, product, version, and deviceName can be anything you want
 7. Once you have the configs set up correctly, you'll need to authorize your bot on a server you have administrative access to.  For documentation, you can read: https://discordapp.com/developers/docs/topics/oauth2#bots.  The steps are as follows:
-    1. Go to `https://discordapp.com/api/oauth2/authorize?client_id=[CLIENT_ID]&scope=bot&permissions=1` where [CLIENT_ID] is the Discord App Client ID
+    1. Go to `https://discordapp.com/api/oauth2/authorize?client_id=[CLIENT ID]&permissions=3197953&scope=bot` where [CLIENT_ID] is the Discord App Client ID
     2. Select **Add a bot to a server** and select the server to add it to
     3. Click **Authorize**
     4. You should now see your bot in your server listed as *Offline*
