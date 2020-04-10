@@ -115,8 +115,6 @@ Bot.prototype.playOneMood = async function(moodName, message){
   }
   
   if(musics.length > 0) {
-    console.log(musics);
-    console.log(musics.length);
     let musicChosen = musics[Math.floor(Math.random() * Math.floor(musics.length))];
     this.songQueue.push(musicChosen);
     if(!this.isPlaying){
