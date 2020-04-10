@@ -14,7 +14,7 @@ module.exports = {
   MUSIC_HELP_1 : 'this command doesn\'t exist.\nType \"{caracteres_commande}?\" to get some help :wink:.',
   MUSIC_UNKNOW_COMMAND : '**sorry \"{cmdTxt}\" is not a command :cry:.**',
   BOT_FIND_SONG_INFO_MUSIC : '{index} - {artist} - {title}',
-  BOT_FIND_SONG_INFO : '\n**!playsong (number) to play your music.**\n**!nextpage** if the music you want is not in this page.**',
+  BOT_FIND_SONG_INFO : '\n**!playsong (number)** to play your music.\n**!nextpage** if the music you want is not in this page.**',
   BOT_FIND_SONG_ERROR : '**I can\'t find any song with that title :cry:.**',
   BOT_ADDTOQUEUE_SUCCES : 'you add **{artist} - {title}** to the queue.\n\n***!viewqueue** to view the queue.*',
   BOT_ADDTOQUEUE_FAIL : '**KYAAAAAAAAAAAAAAAAAAAAAAA :face_vomiting:**',

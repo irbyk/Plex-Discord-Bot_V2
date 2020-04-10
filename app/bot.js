@@ -49,6 +49,7 @@ var Bot = function() {
   this.voiceChannel = null;
   this.conn = null;
   this.termine = false;
+  this.cache_library = {};
   // plex functions ------------------------------------------------------------
 };
 
@@ -112,12 +113,20 @@ Bot.prototype.playOneMood = async function(moodName, message){
       }
     }
   }
-  let musicChosen = musics[Math.floor(Math.random() * Math.floor(musics.length))];
-  this.songQueue.push(musicChosen);
-  if(!this.isPlaying){
-    this.playSong(message);
+  
+  if(musics.length > 0) {
+    console.log(musics);
+    console.log(musics.length);
+    let musicChosen = musics[Math.floor(Math.random() * Math.floor(musics.length))];
+    this.songQueue.push(musicChosen);
+    if(!this.isPlaying){
+      this.playSong(message);
+    } else {
+      message.reply(language.BOT_ADDTOQUEUE_SUCCES.format({artist : musicChosen.artist, title : musicChosen.title}));
+    }
   } else {
-    message.reply(language.BOT_ADDTOQUEUE_SUCCES.format({artist : musicChosen.artist, title : musicChosen.title}));
+    message.reply('I cannot find the mood you\'re looking for :cry:.');
+    throw 'mood missing'
   }
 }
 
@@ -221,10 +230,9 @@ Bot.prototype.findSong = function(query, offset, pageSize, message) {
         else {
           artist = self.tracks[t].grandparentTitle;
         }
-        messageLines += bot.language.BOT_FIND_SONG_INFO_MUSIC.format({index : t+1, artist : artist, title : self.tracks[t].title}) + '\n';
+        messageLines += language.BOT_FIND_SONG_INFO_MUSIC.format({index : t+1, artist : artist, title : self.tracks[t].title}) + '\n';
       }
-      messageLines += language.BOT_FIND_SONG_1;
-      messageLines += language.BOT_FIND_SONG_2;
+      messageLines += language.BOT_FIND_SONG_INFO;
       message.reply(messageLines);
     }
     else {
