@@ -80,6 +80,23 @@ Bot.prototype.loadLibrary = async function() {
   
 }
 
+Bot.prototype.findArtist = async function(name, message) {
+    // Artist : type = 8
+    let resArtist = await this.findTracksOnPlex(name, 0, 10, 8);
+    let resAlbums = await this.plex.query(resArtist.MediaContainer.Metadata[0].key);
+    for(let album of resAlbums.MediaContainer.Metadata) {
+        let resTracks = await this.plex.query(album.key);
+        for(let track of resTracks.MediaContainer.Metadata) {
+            let music = this.trackToMusic(track);
+            this.songQueue.push(music);
+        }
+    }
+    message.reply('add ' + name + '\'s albums to the queue.');
+    if(!this.isPlaying) {
+        this.playSong(message);
+    }
+}
+
 Bot.prototype.findMood = async function(libraryName, moodName, message){
   let self = this;
   if(!self.cache_library[libraryName]) {
