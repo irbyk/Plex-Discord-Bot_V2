@@ -50,13 +50,31 @@ var Bot = function() {
   this.conn = null;
   this.termine = false;
   this.cache_library = {};
-  // plex functions ------------------------------------------------------------
+  
+  this.workingTask = 0;
+  this.waitForStart = false;
+  this.waitForStartMessage = null;
 };
 
-  // find song when provided with query string, offset, pagesize, and message
+//Work like a simple semaphore to avoid conflict while playing song.
+Bot.prototype.beginWorking = function(){
+    this.workingTask++;
+}
+
+Bot.prototype.endWorking = function(){
+    this.workingTask--;
+    if(this.workingTask == 0 && this.waitForStart) {
+        this.waitForStart = false;
+        this.playSong(this.waitForStartMessage);
+    }
+}
+
+// find song when provided with query string, offset, pagesize, and message
 Bot.prototype.findTracksOnPlex = async function(query, offset, pageSize, type = 10) {
   return await this.plex.query('/search/?type=' + type + '&query=' + query + '&X-Plex-Container-Start=' + offset + '&X-Plex-Container-Size=' + pageSize);
 };
+
+
 
 Bot.prototype.loadMood = async function(name) {
   let self = this;
@@ -287,71 +305,79 @@ Bot.prototype.addToQueue = function(songNumber, tracks, message) {
 
   // play song when provided with index number, track, and message
 Bot.prototype.playSong = function(message) {
-  let self = this;
-  self.voiceChannel = message.member.voice.channel;
-
-  if (self.voiceChannel) {
-    self.voiceChannel.join().then(function(connection) {
-      self.conn = connection;
-      let url;
-      if(self.songQueue[0].key) {
-        url = PLEX_PLAY_START + self.songQueue[0].key + PLEX_PLAY_END;
-      } else {
-        url = ytdl(self.songQueue[0].url, { quality: 'highestaudio' });
-      }
-      self.isPlaying = true;
-      self.dispatcher = connection.play(url).on('finish', () => {
-        if (self.songQueue.length > 0) {
-          if(self.songQueue[0].replay) {
-            self.songQueue[0].played = true;
-            self.playSong(message);
-          } else {
-            self.songQueue.shift();
-            if (self.songQueue.length > 0) {
-              self.playSong(message);
-            }
-            // no songs left in queue, continue with playback completetion events
-            else {
-                self.playbackCompletion(message);
-            }
-          }
+    
+    let self = this;
+    self.voiceChannel = message.member.voice.channel;
+    
+    if (self.voiceChannel) {
+        if(this.workingTask > 0){
+        this.isPlaying = true;
+        this.waitForStart = true;
+        this.waitForStartMessage = message;
         } else {
-              self.playbackCompletion(message);
-          }
-      }).on('start', () => {
-          if(!self.songQueue[0].played) {
-            var embedObj = {
-              embed: {
-                color: 4251856,
-                fields:
-                [
-                  {
-                    name: language.ARTIST,
-                    value: self.songQueue[0].artist,
-                    inline: true
-                  },
-                  {
-                    name: language.TITLE,
-                    value: self.songQueue[0].title,
-                    inline: true
-                  }
-                ],
-                footer: {
-                  text: language.NUMBER_MUSIC_IN_QUEUE.format({number : self.songQueue.length, plurial : (self.songQueue.length > 1 ? 's' : '')})
-                },
+            self.voiceChannel.join().then(function(connection) {
+              self.conn = connection;
+              
+              let url;
+              if(self.songQueue[0].key) {
+                url = PLEX_PLAY_START + self.songQueue[0].key + PLEX_PLAY_END;
+              } else {
+                url = ytdl(self.songQueue[0].url, { quality: 'highestaudio' });
               }
-            };
-            if(!self.termine) {
-              message.channel.send(language.BOT_PLAYSONG_SUCCES, embedObj);
-            }
+              self.isPlaying = true;
+              self.dispatcher = connection.play(url).on('finish', () => {
+                if (self.songQueue.length > 0) {
+                  if(self.songQueue[0].replay) {
+                    self.songQueue[0].played = true;
+                    self.playSong(message);
+                  } else {
+                    self.songQueue.shift();
+                    if (self.songQueue.length > 0) {
+                      self.playSong(message);
+                    }
+                    // no songs left in queue, continue with playback completetion events
+                    else {
+                        self.playbackCompletion(message);
+                    }
+                  }
+                } else {
+                      self.playbackCompletion(message);
+                  }
+              }).on('start', () => {
+                  if(!self.songQueue[0].played) {
+                    var embedObj = {
+                      embed: {
+                        color: 4251856,
+                        fields:
+                        [
+                          {
+                            name: language.ARTIST,
+                            value: self.songQueue[0].artist,
+                            inline: true
+                          },
+                          {
+                            name: language.TITLE,
+                            value: self.songQueue[0].title,
+                            inline: true
+                          }
+                        ],
+                        footer: {
+                          text: language.NUMBER_MUSIC_IN_QUEUE.format({number : self.songQueue.length, plurial : (self.songQueue.length > 1 ? 's' : '')})
+                        },
+                      }
+                    };
+                    if(!self.termine) {
+                      message.channel.send(language.BOT_PLAYSONG_SUCCES, embedObj);
+                    }
+                  }
+              });
+              self.dispatcher.setVolume(self.volume);
+            });
           }
-      });
-      self.dispatcher.setVolume(self.volume);
-    });
-  }
-  else {
-    message.reply(language.BOT_PLAYSONG_FAIL)
-  }
+    } else {
+        message.reply(language.BOT_PLAYSONG_FAIL)
+    }
+    
 };
 
 Bot.prototype.playbackCompletion = async function(message) {
