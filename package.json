@@ -1,6 +1,6 @@
 {
   "name": "plexbot",
-  "version": "2.2.2",
+  "version": "2.2.3",
   "description": "a plex bot for discord",
   "main": "index.js",
   "scripts": {
