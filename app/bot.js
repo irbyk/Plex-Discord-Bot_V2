@@ -381,10 +381,14 @@ Bot.prototype.playSong = function(message) {
 };
 
 Bot.prototype.playbackCompletion = async function(message) {
-  await this.conn.disconnect();
-  await this.voiceChannel.leave();
-  this.isPlaying = false;
-  this.termine = false;
+    if(this.conn){
+        await this.conn.disconnect();
+    }
+    if(this.voiceChannel) {
+        await this.voiceChannel.leave();
+    }
+    this.isPlaying = false;
+    this.termine = false;
 };
 
 Bot.prototype.ajoutPlaylist = async function(nomPlaylist, musique, message) {
@@ -408,5 +412,9 @@ Bot.prototype.ajoutPlaylist = async function(nomPlaylist, musique, message) {
       });
   });
 };
+
+Bot.prototype.destroy = async function(){
+    await this.playbackCompletion(null);
+}
 
 module.exports = Bot;
