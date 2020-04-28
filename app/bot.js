@@ -1,4 +1,5 @@
 // Bot module ------------------------------------------------------------------
+const EventEmitter = require('events');
 const PlexAPI = require('plex-api');
 const fs = require('fs');
 const readline = require('readline');
@@ -12,48 +13,50 @@ const plexConfig = require('../config/plex');
 const PLEX_PLAY_START = 'http://' + plexConfig.hostname + ':' + plexConfig.port;
 const PLEX_PLAY_END = '?X-Plex-Token=' + plexConfig.token;
 
-var Bot = function() {
-  // plex config ---------------------------------------------------------------
-  this.language = language;
-  this.config = config;
+var Bot = class Bot extends EventEmitter{
+    constructor(){
+        super();
+        // plex config ---------------------------------------------------------------
+        this.language = language;
+          this.config = config;
 
-  // plex client ---------------------------------------------------------------
-  this.plex = new PlexAPI({
-    hostname: plexConfig.hostname,
-    port: plexConfig.port,
-    username: plexConfig.username,
-    password: plexConfig.password,
-    token: plexConfig.token,
-    options: {
-      identifier: 'PlexBot',
-      product: plexConfig.options.identifier,
-      version: plexConfig.options.version,
-      deviceName: plexConfig.options.deviceName,
-      platform: plexConfig.options.platform,
-      device: plexConfig.options.device
+      // plex client ---------------------------------------------------------------
+        this.plex = new PlexAPI({
+            hostname: plexConfig.hostname,
+            port: plexConfig.port,
+            username: plexConfig.username,
+            password: plexConfig.password,
+            token: plexConfig.token,
+            options: {
+            identifier: 'PlexBot',
+            product: plexConfig.options.identifier,
+            version: plexConfig.options.version,
+            deviceName: plexConfig.options.deviceName,
+            platform: plexConfig.options.platform,
+            device: plexConfig.options.device
+            }
+        });
+        // plex variables ------------------------------------------------------------
+        this.tracks = null;
+        this.plexQuery = null;
+        this.plexOffset = 0; // default offset of 0
+        this.plexPageSize = 10; // default result size of 10
+        this.isPlaying = false;
+        this.isPaused = false;
+        this.songQueue = []; // will be used for queueing songs
+        this.volume = 0.2
+        this.botPlaylist = null;
+
+        // plex vars for playing audio -----------------------------------------------
+        this.dispatcher = null;
+        this.voiceChannel = null;
+        this.conn = null;
+        this.cache_library = {};
+        
+        this.workingTask = 0;
+        this.waitForStart = false;
+        this.waitForStartMessage = null;
     }
-  });
-  // plex variables ------------------------------------------------------------
-  this.tracks = null;
-  this.plexQuery = null;
-  this.plexOffset = 0; // default offset of 0
-  this.plexPageSize = 10; // default result size of 10
-  this.isPlaying = false;
-  this.isPaused = false;
-  this.songQueue = []; // will be used for queueing songs
-  this.volume = 0.2
-  this.botPlaylist = null;
-
-  // plex vars for playing audio -----------------------------------------------
-  this.dispatcher = null;
-  this.voiceChannel = null;
-  this.conn = null;
-  this.termine = false;
-  this.cache_library = {};
-  
-  this.workingTask = 0;
-  this.waitForStart = false;
-  this.waitForStartMessage = null;
 };
 
 //Work like a simple semaphore to avoid conflict while playing song.
@@ -310,6 +313,7 @@ Bot.prototype.playSong = function(message) {
     self.voiceChannel = message.member.voice.channel;
     
     if (self.voiceChannel) {
+        self.emit('will play', message);
         if(this.workingTask > 0){
         this.isPlaying = true;
         this.waitForStart = true;
@@ -325,6 +329,7 @@ Bot.prototype.playSong = function(message) {
                 url = ytdl(self.songQueue[0].url, { quality: 'highestaudio' });
               }
               self.isPlaying = true;
+              
               self.dispatcher = connection.play(url).on('finish', () => {
                 if (self.songQueue.length > 0) {
                   if(self.songQueue[0].replay) {
@@ -337,10 +342,13 @@ Bot.prototype.playSong = function(message) {
                     }
                     // no songs left in queue, continue with playback completetion events
                     else {
+                        this.isPlaying = false;
+                        self.emit('finish', message);
                         self.playbackCompletion(message);
                     }
                   }
                 } else {
+                      self.emit('finish', message);
                       self.playbackCompletion(message);
                   }
               }).on('start', () => {
@@ -366,9 +374,7 @@ Bot.prototype.playSong = function(message) {
                         },
                       }
                     };
-                    if(!self.termine) {
-                      message.channel.send(language.BOT_PLAYSONG_SUCCES, embedObj);
-                    }
+                    message.channel.send(language.BOT_PLAYSONG_SUCCES, embedObj);
                   }
               });
               self.dispatcher.setVolume(self.volume);
@@ -381,14 +387,14 @@ Bot.prototype.playSong = function(message) {
 };
 
 Bot.prototype.playbackCompletion = async function(message) {
-    if(this.conn){
-        await this.conn.disconnect();
+    if(!this.isPlaying) {
+        if(this.conn){
+            await this.conn.disconnect();
+        }
+        if(this.voiceChannel) {
+            await this.voiceChannel.leave();
+        }
     }
-    if(this.voiceChannel) {
-        await this.voiceChannel.leave();
-    }
-    this.isPlaying = false;
-    this.termine = false;
 };
 
 Bot.prototype.ajoutPlaylist = async function(nomPlaylist, musique, message) {
