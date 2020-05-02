@@ -11,7 +11,7 @@ module.exports = {
         if(bot.isPlaying){
           message.reply(bot.language.YOUTUBE_SUCCES.format({artist : songInfo.author.name, title : songInfo.title, caracteres_commande : bot.config.caracteres_commande}));
         } else {
-          bot.encoreDuTravail(message);
+          bot.playSong(message);
         }
       });
     }
