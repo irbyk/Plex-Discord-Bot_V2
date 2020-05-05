@@ -124,4 +124,7 @@ If you see any bugs use the issue tracker.  Thanks!
 * [x] youtube command.
 * [x] refactor the code base.
 * [x] add language support.
-* [x] Change all the french to english ^^'.
+* [x] plex mood support.
+* [x] plex playlist support.
+* [x] plex artist support.
+* [x] shuffle and loop support.
