@@ -342,12 +342,13 @@ Bot.prototype.playSong = function(message) {
                     }
                     // no songs left in queue, continue with playback completetion events
                     else {
-                        this.isPlaying = false;
+                        self.isPlaying = false;
                         self.emit('finish', message);
                         self.playbackCompletion(message);
                     }
                   }
                 } else {
+					self.isPlaying = false;
                       self.emit('finish', message);
                       self.playbackCompletion(message);
                   }
@@ -387,13 +388,14 @@ Bot.prototype.playSong = function(message) {
 };
 
 Bot.prototype.playbackCompletion = async function(message) {
-    if(!this.isPlaying) {
+	if(!this.isPlaying) {
         if(this.conn){
             await this.conn.disconnect();
         }
         if(this.voiceChannel) {
             await this.voiceChannel.leave();
         }
+		
     }
 };
 
