@@ -16,7 +16,7 @@ module.exports = {
         }
         let nomFichier = bot.config.dossier_playlists+args[0]+'.playlist';
 		if(!fs.existsSync(bot.config.dossier_playlists)) {
-			fs.mkdirSync(bot.config.dossier_playlists);
+			fs.mkdirSync(bot.config.dossier_playlists, {recursive: true});
 		}
         if(fs.existsSync(nomFichier)) {
           message.reply(bot.language.PLAYLIST_CREATE_ERROR_ALREADY_EXIST);
