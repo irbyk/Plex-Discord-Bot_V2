@@ -2,7 +2,7 @@ const ytdl = require('ytdl-core');
 const fs = require('fs');
 
 module.exports = {
-  name : 'ajout',
+  name : 'add',
   command : {
     usage : '<playlist> <music name>',
     description : 'Add a music to the given playlist.',
