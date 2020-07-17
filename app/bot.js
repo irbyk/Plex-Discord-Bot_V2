@@ -237,7 +237,7 @@ Bot.prototype.loadPlaylist = function(url, message) {
         }
         self.songQueue.push({'artist' : artist, 'title': title, 'key': key});
       }
-      self.encoreDuTravail(message);
+      self.playSong(message);
     });
   });
 }
