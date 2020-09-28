@@ -248,7 +248,6 @@ Bot.prototype.findAlbum = function(query, message) {
 	let self = this;
 	// Album : type = 9
 	self.findTracksOnPlex(query, 0, 10, 9).then(function(res) {
-		console.log(res);
 		let key = res.MediaContainer.Metadata[0].key;
 		let url = PLEX_PLAY_START + key + PLEX_PLAY_END;
 		self.loadAlbum(url, message);

@@ -1,22 +1,22 @@
 {
-  "name": "plexbot",
-  "version": "2.2.4",
-  "description": "a plex bot for discord",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "author": "danxfisher, irbyk",
-  "license": "ISC",
-  "dependencies": {
-    "discord.js": "^12.0.2",
-    "@discordjs/opus": "*",
-    "bufferutil": "^4.0.1",
-    "erlpack": "^0.1.3",
-    "libsodium-wrappers": "^0.7.6",
-    "utf-8-validate": "^5.0.2",
-    "ffmpeg-static": "^4.0.1",
-    "plex-api": "^5.2.5",
-    "ytdl-core": "*"
-  }
+	"name": "plexbot",
+	"version": "2.2.5",
+	"description": "a plex bot for discord",
+	"main": "index.js",
+	"scripts": {
+		"test": "echo \"Error: no test specified\" && exit 1"
+	},
+	"author": "danxfisher, irbyk",
+	"license": "ISC",
+	"dependencies": {
+		"discord.js": "^12.0.2",
+		"@discordjs/opus": "*",
+		"bufferutil": "^4.0.1",
+		"erlpack": "^0.1.3",
+		"libsodium-wrappers": "^0.7.6",
+		"utf-8-validate": "^5.0.2",
+		"ffmpeg-static": "^4.0.1",
+		"plex-api": "^5.2.5",
+		"ytdl-core": "*"
+	}
 }
