@@ -9,14 +9,14 @@
 	"author": "danxfisher, irbyk",
 	"license": "ISC",
 	"dependencies": {
-		"discord.js": "^12.0.2",
 		"@discordjs/opus": "*",
 		"bufferutil": "^4.0.1",
+		"discord.js": "^12.3.1",
 		"erlpack": "^0.1.3",
-		"libsodium-wrappers": "^0.7.6",
-		"utf-8-validate": "^5.0.2",
-		"ffmpeg-static": "^4.0.1",
+		"ffmpeg-static": "^4.2.7",
+		"libsodium-wrappers": "^0.7.8",
 		"plex-api": "^5.2.5",
-		"ytdl-core": "*"
+		"utf-8-validate": "^5.0.2",
+		"ytdl-core": "^3.3.0"
 	}
 }
