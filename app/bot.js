@@ -394,27 +394,7 @@ Bot.prototype.playSong = function(message) {
 									}
 							}).on('start', () => {
 									if(!self.songQueue[0].played) {
-										var embedObj = {
-											embed: {
-												color: 4251856,
-												fields:
-												[
-													{
-														name: language.ARTIST,
-														value: self.songQueue[0].artist,
-														inline: true
-													},
-													{
-														name: language.TITLE,
-														value: self.songQueue[0].title,
-														inline: true
-													}
-												],
-												footer: {
-													text: language.NUMBER_MUSIC_IN_QUEUE.format({number : self.songQueue.length, plurial : (self.songQueue.length > 1 ? 's' : '')})
-												},
-											}
-										};
+										var embedObj = self.songToEmbedObject(self.songQueue[0]);
 										message.channel.send(language.BOT_PLAYSONG_SUCCES, embedObj);
 									}
 							});
@@ -426,6 +406,31 @@ Bot.prototype.playSong = function(message) {
 		}
 		
 };
+
+Bot.prototype.songToEmbedObject = function(song) {
+	var embedObj = {
+		embed: {
+			color: 4251856,
+			fields:
+			[
+				{
+					name: language.ARTIST,
+					value: song.artist,
+					inline: true
+				},
+				{
+					name: language.TITLE,
+					value: song.title,
+					inline: true
+				}
+			],
+			footer: {
+				text: language.NUMBER_MUSIC_IN_QUEUE.format({number : this.songQueue.length, plurial : (this.songQueue.length > 1 ? 's' : '')})
+			},
+		}
+	};
+	return embedObj;
+}
 
 Bot.prototype.playbackCompletion = async function(message) {
 	if(!this.isPlaying) {
