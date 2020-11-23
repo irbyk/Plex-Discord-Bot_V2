@@ -4,7 +4,6 @@ module.exports = {
   'username'    : '',
   'password'    : '',
   'token'       : '',
-  'machineId'   : '',
   'managedUser' : '',
   'options'     : {
     'identifier': '',
