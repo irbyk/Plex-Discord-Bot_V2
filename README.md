@@ -5,7 +5,7 @@ He should have all the credit for starting this project.
 ## Installation
 1. Clone the repo or download a zip and unpackage it.
 
-If you to use docker, skip the points 2 and 3.
+If you to use [Docker](https://www.docker.com/) , skip the points 2 and 3.
 
 2. Install Node.js: https://nodejs.org/
 3. Navigate to the root folder and in the console, type `npm install`
@@ -30,8 +30,9 @@ If you to use docker, skip the points 2 and 3.
     1. Go to `https://discordapp.com/api/oauth2/authorize?client_id=[CLIENT ID]&permissions=3197953&scope=bot` where [CLIENT_ID] is the Discord App Client ID
     2. Select **Add a bot to a server** and select the server to add it to
     3. Click **Authorize**
-    4. You should now see your bot in your server listed as *Offline*
-If want want to use Docker, just go to the Docker section.
+    4. You should now see your bot in your server listed as *Offline*.
+
+If want want to use [Docker](https://www.docker.com/), just go to the Docker section.
 
 8. To bring your bot *Online*, navigate to the root of the app (where `index.js` is located) and in your console, type `node index.js`
     * This will start your server.  The console will need to be running for the bot to run.
@@ -40,7 +41,7 @@ If I am missing any steps, feel free to reach out or open  an issue/bug in the I
 
 ***
 ## Docker
-If you are using docker, you can use these commands to build and start your Plex bot (after downloading the source code and set the config file) :
+If you are using [Docker](https://www.docker.com/), you can use these commands to build and start your Plex bot (after downloading the source code and set the config file) :
 
 go to your plex bot folder (`cd your/plex/bot/folder`)
 
