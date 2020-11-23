@@ -23,9 +23,7 @@ If you to use [Docker](https://www.docker.com/) , skip the points 2 and 3.
 5. Take all of the information from the page and enter it into the `config/keys.js` file, replacing the placeholders.
 6. Navigate to the `config/plex.js` file and replace the placeholders with your Plex Server information
     1. To get your token, following the instructions here: https://support.plex.tv/hc/en-us/articles/204059436-Finding-an-authentication-token-X-Plex-Token
-    2. To get your machineId or "machineIdentifier", follow the instructions here: https://support.plex.tv/hc/en-us/articles/201638786-Plex-Media-Server-URL-Commands
-        * In the first example under "Base Server Capabilities", you can see the information returned when you type `http://[PMS_IP_Address]:32400/?X-Plex-Token=YourTokenGoesHere` into your address bar of a web browser.  Copy everything between the quotes for the parameter "machineIdentifier" and paste it into the "machineId" property in `config/plex.js`
-    3. The identifier, product, version, and deviceName can be anything you want
+    2. The identifier, product, version, and deviceName can be anything you want
 7. Once you have the configs set up correctly, you'll need to authorize your bot on a server you have administrative access to.  For documentation, you can read: https://discordapp.com/developers/docs/topics/oauth2#bots.  The steps are as follows:
     1. Go to `https://discordapp.com/api/oauth2/authorize?client_id=[CLIENT ID]&permissions=3197953&scope=bot` where [CLIENT_ID] is the Discord App Client ID
     2. Select **Add a bot to a server** and select the server to add it to
