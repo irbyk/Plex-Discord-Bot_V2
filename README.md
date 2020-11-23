@@ -96,7 +96,6 @@ module.exports= {
   'username'    : 'PLEX_USERNAME',
   'password'    : 'PLEX_PASSWORD',
   'token'       : 'PLEX_TOKEN',
-  'machineId'   : 'PLEX_MACHINEID',
   'managedUser' : 'PLEX_MANAGED_USERNAME',
   'options'     : {
     'identifier': 'APP_IDENTIFIER',
