@@ -210,6 +210,8 @@ Bot.prototype.jouerUneMusique = async function(musique, vChannel, callback) {
 Bot.prototype.findPlaylist = function(query, message) {
 	let self = this;
 	self.findTracksOnPlex(query, 0, 10, 15).then(function(res) {
+		console.log(res);
+		console.log(res.MediaContainer);
 		let key = res.MediaContainer.Metadata[0].key;
 		let url = PLEX_PLAY_START + key + PLEX_PLAY_END;
 		self.loadPlaylist(url, message);
