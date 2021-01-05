@@ -9,7 +9,7 @@ module.exports = {
         try {
           await bot.playOneMood(query, message);
         } catch (err){
-          ;
+          console.log(err);
         }
       } else {
         message.reply(bot.language.PLAY_FAIL);

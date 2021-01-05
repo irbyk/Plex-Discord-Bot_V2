@@ -83,8 +83,10 @@ Bot.prototype.loadMood = async function(name) {
 	let self = this;
 	self.cache_library[name].mood = {};
 	let res = await self.plex.query('/library/sections/' + self.cache_library[name].key + '/mood?type=10');
-	for(let mood of res.MediaContainer.Directory) {
-		self.cache_library[name].mood[mood.title] = {key : mood.key, url : '/library/sections/' + self.cache_library[name].key + '/all?type=10&mood=' + mood.key};
+	if(res.MediaContainer.Directory) {
+		for(let mood of res.MediaContainer.Directory) {
+			self.cache_library[name].mood[mood.title] = {key : mood.key, url : '/library/sections/' + self.cache_library[name].key + '/all?type=10&mood=' + mood.key};
+		}
 	}
 }
 
@@ -151,7 +153,6 @@ Bot.prototype.playOneMood = async function(moodName, message){
 			}
 		}
 	}
-	
 	if(musics.length > 0) {
 		let musicChosen = musics[Math.floor(Math.random() * Math.floor(musics.length))];
 		this.songQueue.push(musicChosen);
