@@ -74,7 +74,8 @@ Bot.prototype.endWorking = function(){
 
 // find song when provided with query string, offset, pagesize, and message
 Bot.prototype.findTracksOnPlex = async function(query, offset, pageSize, type = 10) {
-	return await this.plex.query('/search/?type=' + type + '&query=' + query + '&X-Plex-Container-Start=' + offset + '&X-Plex-Container-Size=' + pageSize);
+    let queryHTTP = encodeURI(query);
+	return await this.plex.query('/search/?type=' + type + '&query=' + queryHTTP + '&X-Plex-Container-Start=' + offset + '&X-Plex-Container-Size=' + pageSize);
 };
 
 
@@ -316,7 +317,8 @@ Bot.prototype.findSong = function(query, offset, pageSize, message) {
 			message.reply(language.BOT_FIND_SONG_ERROR);
 		}
 	}, function (err) {
-		console.log('narp');
+        
+		console.log(err);
 	});
 };
 
