@@ -252,26 +252,6 @@ class Bot extends EventEmitter{
 	/**
 	 *
 	 */
-	async jouerUneMusique(musique, vChannel, callback) {
-		let self = this;
-		let connection = await vChannel.join();
-		this.conn = connection;
-		this.voiceChannel = vChannel;
-		let url;
-		if(musique.key) {
-			url = PLEX_PLAY_START + musique.key + PLEX_PLAY_END;
-		} else {
-			url = ytdl(musique.url);
-		}
-		self.isPlaying = true;
-		self.dispatcher = connection.play(url).on('finish', () => callback()).on('error', function (){ throw "problème de lecture."});
-		self.dispatcher.setVolume(self.volume);
-		return self.dispatcher;
-	};
-
-	/**
-	 *
-	 */
 	findPlaylist(query, message) {
 		let self = this;
 		self.findTracksOnPlex(query, 0, 10, 15).then(function(res) {
