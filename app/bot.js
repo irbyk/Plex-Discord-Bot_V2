@@ -77,17 +77,6 @@ class Bot extends EventEmitter{
 	}
 
 	/**
-	 *
-	 */
-	getChannel(){
-		let channel = client.channels.fetch('648213716231520267')
-		.then(function (channel) {
-			console.log(channel.name);
-			channel.send(message);
-		}).catch(console.error);
-	}
-
-	/**
 	 * Find song when provided with query string, offset, pagesize, and message
 	 */
 	async findTracksOnPlex(query, offset, pageSize, type = 10) {
@@ -241,7 +230,7 @@ class Bot extends EventEmitter{
 		if(musique.key) {
 			url = PLEX_PLAY_START + musique.key + PLEX_PLAY_END;
 		} else {
-			url = ytdl(musique.url);
+			url = ytdl(musique.url, { quality: 'highestaudio' });
 		}
 		self.isPlaying = true;
 		self.dispatcher = connection.play(url).on('finish', () => callback()).on('error', function (){ throw "problème de lecture."});
@@ -372,7 +361,7 @@ class Bot extends EventEmitter{
 				message.reply(language.BOT_FIND_SONG_ERROR);
 			}
 		}, function (err) {
-			console.log(err);
+			console.error(err);
 		});
 	}
 

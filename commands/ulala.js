@@ -13,12 +13,12 @@ module.exports = {
         if(ulalaPlaying){
           bot.isPlaying = true;
           let musique = {"url" : "https://www.youtube.com/watch?v=ElzlUMlu4G0"};
-          let ulala = function() {
+          let ulala = async function() {
             if(ulalaPlaying) {
               try {
                 bot.jouerUneMusique(musique, message.member.voice.channel, ulala);
               } catch (e){
-                console.log(e);
+                console.error(e);
                 musique = {"url" : "https://www.youtube.com/watch?v=ElzlUMlu4G0"};
                 ulala();
               }
