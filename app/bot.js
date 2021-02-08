@@ -164,7 +164,7 @@ class Bot extends EventEmitter{
 		if(Object.keys(this.cache_library).length == 0){
 			await this.loadLibrary();
 		}
-		musics = [];
+		let musics = [];
 		for (let library of Object.values(this.cache_library)){
 			if(library.mood[moodName]) {
 				let res = await this.plex.query(library.mood[moodName].url)
