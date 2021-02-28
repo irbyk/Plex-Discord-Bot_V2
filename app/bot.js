@@ -76,6 +76,26 @@ class Bot extends EventEmitter{
 		}
 	}
 
+	getRandomNumber(max) {
+		return Math.floor(Math.random() * Math.floor(max));
+	}
+
+	async findRandomTracksOnPlex(message) {
+		if(Object.keys(this.cache_library).length == 0){
+			await this.loadLibrary();
+		}
+		let nombre = this.getRandomNumber(Object.keys(this.cache_library).length);
+		let res = await this.plex.query('/library/sections/' + this.cache_library[Object.keys(this.cache_library)[nombre]].key + '/all?type=10');
+		let nombre2 = this.getRandomNumber(res.MediaContainer.Metadata.length);
+		let music = this.trackToMusic(res.MediaContainer.Metadata[nombre2],true);
+		this.songQueue.push(music);
+		if(!this.isPlaying){
+			this.playSong(message);
+		} else {
+			message.reply(language.BOT_ADDTOQUEUE_SUCCES.format({artist : music.artist, title : music.title}));
+		}
+	}
+
 	/**
 	 * Find song when provided with query string, offset, pagesize, and message
 	 */
