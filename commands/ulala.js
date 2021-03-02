@@ -27,10 +27,12 @@ module.exports = {
           ulala();
         } else {
           await bot.dispatcher.end();
-          await bot.playbackCompletion(message);
+		  bot.isPlaying = false;
           if(bot.songQueue.length > 0 ) {
             bot.playSong(message);
-          }
+          } else {
+			await bot.playbackCompletion(message);
+		  }
         }
       }
     }
