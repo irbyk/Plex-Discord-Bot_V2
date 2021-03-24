@@ -15,11 +15,12 @@ const PLEX_PLAY_START = 'http://' + plexConfig.hostname + ':' + plexConfig.port;
 const PLEX_PLAY_END = '?X-Plex-Token=' + plexConfig.token;
 
 class Bot extends EventEmitter{
-		constructor(){
+		constructor(client){
 				super();
+				this.client = client;
 				// plex config ---------------------------------------------------------------
 				this.language = language;
-					this.config = config;
+				this.config = config;
 
 			// plex client ---------------------------------------------------------------
 				this.plex = new PlexAPI({
@@ -57,6 +58,7 @@ class Bot extends EventEmitter{
 				this.workingTask = 0;
 				this.waitForStart = false;
 				this.waitForStartMessage = null;
+				this.test = null;
 		}
 	/**
 	 * Work like a simple semaphore to avoid conflict while playing song.
@@ -87,7 +89,7 @@ class Bot extends EventEmitter{
 		let nombre = this.getRandomNumber(Object.keys(this.cache_library).length);
 		let res = await this.plex.query('/library/sections/' + this.cache_library[Object.keys(this.cache_library)[nombre]].key + '/all?type=10');
 		let nombre2 = this.getRandomNumber(res.MediaContainer.Metadata.length);
-		let music = this.trackToMusic(res.MediaContainer.Metadata[nombre2],true);
+		let music = this.trackToMusic(res.MediaContainer.Metadata[nombre2]);
 		this.songQueue.push(music);
 		if(!this.isPlaying){
 			this.playSong(message);
@@ -107,31 +109,55 @@ class Bot extends EventEmitter{
 	/**
 	 *
 	 */
-	async loadMood(name) {
-		let self = this;
-		self.cache_library[name].mood = {};
-		let res = await self.plex.query('/library/sections/' + self.cache_library[name].key + '/mood?type=10');
+	async loadMood(id) {
+		let res = await this.plex.query('/library/sections/' + id + '/mood?type=10');
+		let moods = {};
 		if(res.MediaContainer.Directory) {
 			for(let mood of res.MediaContainer.Directory) {
-				self.cache_library[name].mood[mood.title] = {key : mood.key, url : '/library/sections/' + self.cache_library[name].key + '/all?type=10&mood=' + mood.key};
+				moods[mood.title] = {name: mood.title, key : mood.key, url : '/library/sections/' + id + '/all?type=10&mood=' + mood.key};
 			}
 		}
+		return (Object.keys(moods).length === 0 && moods.constructor == Object ? undefined : moods);
 	}
 
 	/**
 	 *
 	 */
-	async loadLibrary() {
-		let self = this;
-		self.cache_library = {};
-		let res = await this.plex.query('/library/sections');
-		for(let library of res.MediaContainer.Directory){
-			if(library.type == 'artist'){
-				self.cache_library[library.title] = {key : library.key, mood : {}};
-				await self.loadMood(library.title);
+	async loadLibrary(id=-1) {
+		try {
+			if(id == -1) {
+			this.cache_library = {};
+			let res = await this.plex.query('/library/sections');
+			for(let library of res.MediaContainer.Directory){
+				if(library.type == 'artist'){
+					this.cache_library[library.key] = {name: library.title, key : library.key, mood : await this.loadMood(library.key)};
+					this.emit('libraryAdded', this.cache_library[library.key]);
+				}
 			}
+			
+		} else {
+			let res = await this.plex.query('/library/sections/' + id);
+			if(!res.MediaContainer.title1) {
+				this.emit('loadLibraryError', {key: id, err: new Error('Key doesn\'t exist.')});
+				return;
+			}
+			this.cache_library[id] = {name: res.MediaContainer.title1, key: id, mood: await this.loadMood(id)};
+			this.emit('libraryAdded', this.cache_library[id]);
 		}
-		
+		} catch(err) {
+			this.emit('loadLibraryError', {key: id, err: err});
+		}
+	}
+
+	async removeLibrary(id=-1) {
+		if(id == -1) {
+			;
+		} else {
+			let list = Object.entries(this.cache_library);
+			let library = this.cache_library[id];
+			delete this.cache_library[id];
+			this.emit('libraryRemoved', library);
+		}
 	}
 
 	/**
@@ -142,39 +168,16 @@ class Bot extends EventEmitter{
 		let resArtist = await this.findTracksOnPlex(name, 0, 10, 8);
 		let resAlbums = await this.plex.query(resArtist.MediaContainer.Metadata[0].key);
 		for(let album of resAlbums.MediaContainer.Metadata) {
-				let resTracks = await this.plex.query(album.key);
-				for(let track of resTracks.MediaContainer.Metadata) {
-						let music = this.trackToMusic(track);
-						this.songQueue.push(music);
-				}
+			let resTracks = await this.plex.query(album.key);
+			for(let track of resTracks.MediaContainer.Metadata) {
+				let music = this.trackToMusic(track);
+				this.songQueue.push(music);
+			}
 		}
 		message.reply('add ' + name + '\'s albums to the queue.');
 		if(!this.isPlaying) {
-				this.playSong(message);
+			this.playSong(message);
 		}
-	}
-
-	/**
-	 *
-	 */
-	async findMood(libraryName, moodName, message){
-		let self = this;
-		if(!self.cache_library[libraryName]) {
-			await self.loadLibrary();
-			if(!self.cache_library[libraryName]) {
-				message.reply('I didn\'t find the library :cry:.')
-				return;
-			}
-		}
-		if(!self.cache_library[libraryName].mood[moodName]){
-			await self.loadMood(libraryName);
-			await self.loadLibrary();
-			if(!self.cache_library[libraryName]) {
-				message.reply('I didn\'t find the mood :cry:.')
-				return;
-			}
-		}
-		return !self.cache_library[libraryName].mood[moodName];
 	}
 
 	/**
@@ -189,7 +192,7 @@ class Bot extends EventEmitter{
 			if(library.mood[moodName]) {
 				let res = await this.plex.query(library.mood[moodName].url)
 				for(let track of res.MediaContainer.Metadata){
-					musics.push(this.trackToMusic(track, true));
+					musics.push(this.trackToMusic(track));
 				}
 			}
 		}
@@ -211,7 +214,7 @@ class Bot extends EventEmitter{
 	/**
 	 *
 	 */
-	trackToMusic(track, repeat = false) {
+	trackToMusic(track) {
 		let key = track.Media[0].Part[0].key;
 		let artist = '';
 		let title = track.title;
@@ -221,7 +224,8 @@ class Bot extends EventEmitter{
 		else {
 			artist = track.grandparentTitle;
 		}
-		return {'artist' : artist, 'title': title, 'key': key};
+		let album = track.parentTitle;
+		return {'artist' : artist, 'title': title, 'key': key, 'album': album};
 	};
 
 	/**
@@ -417,60 +421,70 @@ class Bot extends EventEmitter{
 	/**
 	 * Play song when provided with index number, track, and message
 	 */
-	playSong(message) {
+	async playSong(message) {
+		//Se connecter
+		//
+		
 		
 		let self = this;
 		self.voiceChannel = message.member.voice.channel;
 
 		if (self.voiceChannel) {
-				self.emit('will play', message);
-				if(this.workingTask > 0){
-				this.isPlaying = true;
-				this.waitForStart = true;
-				this.waitForStartMessage = message;
-				} else {
-						self.voiceChannel.join().then(function(connection) {
-							self.conn = connection;
-							
-							let url;
-							if(self.songQueue[0].key) {
-								url = PLEX_PLAY_START + self.songQueue[0].key + PLEX_PLAY_END;
-							} else {
-								url = ytdl(self.songQueue[0].url, { quality: 'highestaudio' });
-							}
-							self.isPlaying = true;
-							
-							self.dispatcher = connection.play(url).on('finish', () => {
-								if (self.songQueue.length > 0) {
-									if(self.songQueue[0].replay) {
-										self.songQueue[0].played = true;
-										self.playSong(message);
-									} else {
-										self.songQueue.shift();
-										if (self.songQueue.length > 0) {
-											self.playSong(message);
-										}
-										// no songs left in queue, continue with playback completetion events
-										else {
-												self.isPlaying = false;
-												self.emit('finish', message);
-												self.playbackCompletion(message);
-										}
-									}
-								} else {
-					self.isPlaying = false;
-											self.emit('finish', message);
-											self.playbackCompletion(message);
-									}
-							}).on('start', () => {
-									if(!self.songQueue[0].played) {
-										var embedObj = self.songToEmbedObject(self.songQueue[0]);
-										message.channel.send(language.BOT_PLAYSONG_SUCCES, embedObj);
-									}
-							});
-							self.dispatcher.setVolume(self.volume);
-						});
+			self.emit('will play', message);
+			if(this.workingTask > 0){
+			this.isPlaying = true;
+			this.waitForStart = true;
+			this.waitForStartMessage = message;
+			
+			} else {
+				let test;
+				self.voiceChannel.join().then(function(connection) {
+					self.conn = connection;
+					
+					let url;
+					if(self.songQueue[0].key) {
+						url = PLEX_PLAY_START + self.songQueue[0].key + PLEX_PLAY_END;
+					} else {
+						url = ytdl(self.songQueue[0].url, { quality: 'highestaudio' });
 					}
+					self.isPlaying = true;
+					let dispatcherFunc = function() {
+						if (self.songQueue.length > 0) {
+							if(self.songQueue[0].replay) {
+								self.songQueue[0].played = true;
+								self.playSong(message);
+							} else {
+								self.songQueue.shift();
+								if (self.songQueue.length > 0) {
+									self.playSong(message);
+								}
+								// no songs left in queue, continue with playback completetion events
+								else {
+									self.isPlaying = false;
+									self.emit('finish', message);
+									self.playbackCompletion(message);
+								}
+							}
+						} else {
+							self.isPlaying = false;
+							self.emit('finish', message);
+							self.playbackCompletion(message);
+						}
+					};
+					self.test = self.client.voice.createBroadcast();
+					self.test.play(url);
+					self.dispatcher = connection.play(self.test).on('finish', dispatcherFunc).on('start', () => {
+							if(!self.songQueue[0].played) {
+								var embedObj = self.songToEmbedObject(self.songQueue[0]);
+								message.channel.send(language.BOT_PLAYSONG_SUCCES, embedObj);
+							}
+					});
+					self.dispatcher.setVolume(self.volume);
+					self.test.on('finish', () => {
+						console.log('finish');
+					});
+				});
+			}
 		} else {
 				message.reply(language.BOT_PLAYSONG_FAIL)
 		}
@@ -549,6 +563,25 @@ class Bot extends EventEmitter{
 	async destroy(){
 		await this.playbackCompletion(null);
 	}
+
+	/**
+	 *
+	 */
+	async getLibrariesList() {
+		let res = await this.plex.query('/library/sections');
+		let retour = [];
+		for(let library of res.MediaContainer.Directory){
+			if(library.type == 'artist'){
+				retour.push({name: library.title, key: library.key, mood : await this.loadMood(library.key)});
+			}
+		}
+		return retour;
+	}
 };
+
+async function youtubeURLToMusic(youtubeURL) {
+	let songInfo = await ytdl.getInfo(query);
+	return {'artist' : songInfo.videoDetails.author.name , 'title': songInfo.videoDetails.title, 'url': songInfo.videoDetails.video_url};
+}
 
 module.exports = Bot;

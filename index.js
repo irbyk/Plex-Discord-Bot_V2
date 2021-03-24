@@ -6,7 +6,7 @@ var keys = require('./config/keys.js');
 
 // discord client --------------------------------------------------------------
 const client = new Discord.Client();
-const bot = new Bot();
+const bot = new Bot(client);
 // bot functions ---------------------------------------------------------------
 require('./app/music.js')(client, bot);
 

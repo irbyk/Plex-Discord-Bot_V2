@@ -16,7 +16,7 @@ module.exports = function(client, bot) {
       
       if (msg.startsWith(bot.config.caracteres_commande)){
         if(bot.config.canal_ecoute == '' || message.channel.name == bot.config.canal_ecoute) {
-            var cmdTxt = msg.split(" ")[0].substring(bot.config.caracteres_commande.length, msg.length).toLowerCase();
+            var cmdTxt = msg.split(/\s+/)[0].substring(bot.config.caracteres_commande.length, msg.length).toLowerCase();
             var query = msg.substring(cmdTxt.length+2);
             if(cmdTxt == "?") {
               if(query) {
