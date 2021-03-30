@@ -28,6 +28,7 @@ class Bot extends EventEmitter{
                                             hostname: plexConfig.hostname,
                                             port: plexConfig.port,
                                             token: plexConfig.token,
+											https: plexConfig.https,
                                             options: {
                                             	identifier: plexConfig.options.identifier,
                                             	product: plexConfig.options.product,
