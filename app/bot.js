@@ -11,32 +11,28 @@ const request = require('request');
 const language = require('../'+config.language);
 	// plex constants ------------------------------------------------------------
 const plexConfig = require('../config/plex');
-const PLEX_PLAY_START = 'http://' + plexConfig.hostname + ':' + plexConfig.port;
+const PLEX_PLAY_START = (plexConfig.https ? 'https://' : 'http://') + plexConfig.hostname + ':' + plexConfig.port;
 const PLEX_PLAY_END = '?X-Plex-Token=' + plexConfig.token;
 
 class Bot extends EventEmitter{
 		constructor(client){
 				super();
 				this.client = client;
+
 				// plex config ---------------------------------------------------------------
 				this.language = language;
 				this.config = config;
 
-			// plex client ---------------------------------------------------------------
+				// plex client ---------------------------------------------------------------
 				this.plex = new PlexAPI({
-						hostname: plexConfig.hostname,
-						port: plexConfig.port,
-						username: plexConfig.username,
-						password: plexConfig.password,
-						token: plexConfig.token,
-						options: {
-						identifier: 'PlexBot',
-						product: plexConfig.options.identifier,
-						version: plexConfig.options.version,
-						deviceName: plexConfig.options.deviceName,
-						platform: plexConfig.options.platform,
-						device: plexConfig.options.device
-						}
+                                                hostname: plexConfig.hostname,
+                                                port: plexConfig.port,
+                                                token: plexConfig.token,
+                                                options: {
+                                                identifier: plexConfig.options.identifier,
+                                                product: plexConfig.options.product,
+                                                version: plexConfig.options.version
+                                                }
 				});
 				// plex variables ------------------------------------------------------------
 				this.tracks = null;
