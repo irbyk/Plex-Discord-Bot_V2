@@ -13,16 +13,18 @@ module.exports = {
     process : async function(bot, client, message, args) {
       
       let random = false;
+      let slice = args.slice(1);
       if (args.length >= 2){
         if (args[args.length - 1] == '-r'){
           random = true;
+          slice = args.slice(1, args.length - 1);
         }
       }
       let playlistName = args[0];
-        args.slice(2).forEach(function(iter){
-            playlistName = playlistName +' ' + iter;
-        });
+      slice.forEach(function(iter){
+        playlistName = playlistName + ' ' + iter;
+      });
       bot.findPlaylist(playlistName, message, random);
+    }
   }
-}
 };
