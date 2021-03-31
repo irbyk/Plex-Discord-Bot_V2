@@ -420,24 +420,25 @@ class Bot extends EventEmitter{
 
 		if (this.voiceChannel) {
 			this.emit('will play', message);
+			
 			if(this.workingTask > 0){
-			this.isPlaying = true;
-			this.waitForStart = true;
-			this.waitForStartMessage = message;
+				this.isPlaying = true;
+				this.waitForStart = true;
+				this.waitForStartMessage = message;
 			
 			} else {
+				let self = this;
 				this.voiceChannel.join().then(function(connection) {
-					this.conn = connection;
+					self.conn = connection;
 					
 					let url;
-					if(this.songQueue[0].key) {
-						url = PLEX_PLAY_START + this.songQueue[0].key + PLEX_PLAY_END;
+					if(self.songQueue[0].key) {
+						url = PLEX_PLAY_START + self.songQueue[0].key + PLEX_PLAY_END;
 					} else {
-						url = ytdl(this.songQueue[0].url, { quality: 'highestaudio' });
+						url = ytdl(self.songQueue[0].url, { quality: 'highestaudio' });
 					}
-					this.isPlaying = true;
+					self.isPlaying = true;
 
-					let self = this;
 					let dispatcherFunc = function() {
 						
 						if (self.songQueue.length > 0) {
@@ -463,13 +464,13 @@ class Bot extends EventEmitter{
 						}
 					};
 					
-					this.dispatcher = connection.play(url).on('finish', dispatcherFunc).on('start', () => {
-							if(!this.songQueue[0].played) {
-								var embedObj = this.songToEmbedObject(this.songQueue[0]);
+					self.dispatcher = connection.play(url).on('finish', dispatcherFunc).on('start', () => {
+							if(!self.songQueue[0].played) {
+								var embedObj = self.songToEmbedObject(self.songQueue[0]);
 								message.channel.send(language.BOT_PLAYSONG_SUCCES, embedObj);
 							}
 					});
-					this.dispatcher.setVolume(this.volume);
+					self.dispatcher.setVolume(self.volume);
 				});
 			}
 		} else {
