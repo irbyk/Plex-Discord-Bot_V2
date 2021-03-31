@@ -8,8 +8,8 @@ function getRandomInt(max) {
 module.exports = {
   name : 'plex',
   command : {
-    usage : '<playlist on plex> -r\nThe \'-r\' option is to play the playlist randomly.',
-    description : 'play one playlist that you can find on plex.',
+    usage : '<playlist on plex> -r',
+    description : 'play one playlist that you can find on plex.\nThe \'-r\' option is to play the playlist randomly.',
     process : async function(bot, client, message, args) {
       
       let random = false;

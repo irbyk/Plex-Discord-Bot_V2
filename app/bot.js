@@ -279,7 +279,7 @@ class Bot extends EventEmitter{
 
 				if (random) {
 					for(let i = 1; i < self.songQueue.length; i++) {
-						let j = getRandomInt(self.songQueue.length -1) +1;
+						let j = getRandomNumber(self.songQueue.length -1) +1;
 						let inter = self.songQueue[j];
 						self.songQueue[j] = self.songQueue[i];
 						self.songQueue[i] = inter;
