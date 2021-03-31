@@ -3,7 +3,6 @@
 const EventEmitter = require('events');
 const PlexAPI = require('plex-api');
 const fs = require('fs');
-const readline = require('readline');
 const ytdl = require('ytdl-core');
 const config = require('../config/config');
 const xml2json = require('xml2js');
@@ -244,39 +243,19 @@ class Bot extends EventEmitter{
 	/**
 	 *
 	 */
-	async jouerUneMusique(musique, vChannel, callback) {
-		let self = this;
-		let connection = await vChannel.join();
-		this.conn = connection;
-		this.voiceChannel = vChannel;
-		let url;
-		if(musique.key) {
-			url = PLEX_PLAY_START + musique.key + PLEX_PLAY_END;
-		} else {
-			url = ytdl(musique.url, { quality: 'highestaudio' });
-		}
-		self.isPlaying = true;
-		self.dispatcher = connection.play(url).on('finish', () => callback()).on('error', function (){ throw "problème de lecture."});
-		self.dispatcher.setVolume(self.volume);
-		return self.dispatcher;
-	};
-
-	/**
-	 *
-	 */
-	findPlaylist(query, message) {
+	findPlaylist(query, message, random) {
 		let self = this;
 		self.findTracksOnPlex(query, 0, 10, 15).then(function(res) {
 			let key = res.MediaContainer.Metadata[0].key;
 			let url = PLEX_PLAY_START + key + PLEX_PLAY_END;
-			self.loadPlaylist(url, message);
+			self.loadPlaylist(url, message, random);
 		});
 	}
 
 	/**
 	 *
 	 */
-	loadPlaylist(url, message) {
+	loadPlaylist(url, message, random=false) {
 		let self = this;
 		request(url, (err, res, body) => {
 			xml2json.parseString(body.toString('utf8'), {}, (err, jsonObj) => {
@@ -297,6 +276,16 @@ class Bot extends EventEmitter{
 					}
 					self.songQueue.push({'artist' : artist, 'title': title, 'key': key});
 				}
+
+				if (random) {
+					for(let i = 1; i < self.songQueue.length; i++) {
+						let j = getRandomInt(self.songQueue.length -1) +1;
+						let inter = self.songQueue[j];
+						self.songQueue[j] = self.songQueue[i];
+						self.songQueue[i] = inter;
+					}
+				}
+
 				if(!this.isPlaying) {
 					this.playSong(message);
 				}
@@ -454,7 +443,7 @@ class Bot extends EventEmitter{
 								if (self.songQueue.length > 0) {
 									self.playSong(message);
 								}
-								// no songs left in queue, continue with playback completetion events
+								// no songs left in queue, continue with playback completion events
 								else {
 									self.isPlaying = false;
 									self.emit('finish', message);
@@ -467,8 +456,7 @@ class Bot extends EventEmitter{
 							self.playbackCompletion(message);
 						}
 					};
-					//self.test = self.client.voice.createBroadcast();
-					//self.test.play(url);
+					
 					self.dispatcher = connection.play(url).on('finish', dispatcherFunc).on('start', () => {
 							if(!self.songQueue[0].played) {
 								var embedObj = self.songToEmbedObject(self.songQueue[0]);

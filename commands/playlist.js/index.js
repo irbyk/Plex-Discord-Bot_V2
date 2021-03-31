@@ -12,7 +12,7 @@ module.exports = {
   name : 'playlist',
   command : {
     usage : '<command>',
-    description : 'Manipulate playlists. Type "playlist ?" to get the commands help.',
+    description : 'Manipulate playlists. Type "!playlist ?" to get the more help.',
     process : function(bot, client, message, query) {
         if(query == "?") {
             for (let command in commandesPlaylist){

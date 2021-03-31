@@ -10,7 +10,6 @@ module.exports = {
     description: 'shuffle the queue (don\'t move the first song in the queue).',
     process: function(bot, client, message, query) {
         bot.beginWorking();
-        let lengthQueue = bot.songQueue.length;
         for(let i = 1; i < bot.songQueue.length; i++) {
               let j = getRandomInt(bot.songQueue.length -1) +1;
               let inter = bot.songQueue[j];
