@@ -8,6 +8,4 @@ RUN npm install
 
 COPY . .
 
-EXPOSE 32400
-
 CMD node index.js
