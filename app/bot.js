@@ -58,7 +58,6 @@ class Bot extends EventEmitter{
 				this.workingTask = 0;
 				this.waitForStart = false;
 				this.waitForStartMessage = null;
-				this.test = null;
 		}
 	/**
 	 * Work like a simple semaphore to avoid conflict while playing song.
@@ -419,12 +418,9 @@ class Bot extends EventEmitter{
 	}
 
 	/**
-	 * Play song when provided with index number, track, and message
+	 *
 	 */
-	async playSong(message) {
-		//Se connecter
-		//
-		
+	async playSong(message) {		
 		
 		let self = this;
 		self.voiceChannel = message.member.voice.channel;
@@ -437,7 +433,6 @@ class Bot extends EventEmitter{
 			this.waitForStartMessage = message;
 			
 			} else {
-				let test;
 				self.voiceChannel.join().then(function(connection) {
 					self.conn = connection;
 					
@@ -449,6 +444,7 @@ class Bot extends EventEmitter{
 					}
 					self.isPlaying = true;
 					let dispatcherFunc = function() {
+
 						if (self.songQueue.length > 0) {
 							if(self.songQueue[0].replay) {
 								self.songQueue[0].played = true;
@@ -471,18 +467,15 @@ class Bot extends EventEmitter{
 							self.playbackCompletion(message);
 						}
 					};
-					self.test = self.client.voice.createBroadcast();
-					self.test.play(url);
-					self.dispatcher = connection.play(self.test).on('finish', dispatcherFunc).on('start', () => {
+					//self.test = self.client.voice.createBroadcast();
+					//self.test.play(url);
+					self.dispatcher = connection.play(url).on('finish', dispatcherFunc).on('start', () => {
 							if(!self.songQueue[0].played) {
 								var embedObj = self.songToEmbedObject(self.songQueue[0]);
 								message.channel.send(language.BOT_PLAYSONG_SUCCES, embedObj);
 							}
 					});
 					self.dispatcher.setVolume(self.volume);
-					self.test.on('finish', () => {
-						console.log('finish');
-					});
 				});
 			}
 		} else {
