@@ -415,29 +415,31 @@ class Bot extends EventEmitter{
 	 */
 	async playSong(message) {		
 		
-		let self = this;
-		self.voiceChannel = message.member.voice.channel;
+		if (this.voiceChannel == null)
+			this.voiceChannel = message.member.voice.channel;
 
-		if (self.voiceChannel) {
-			self.emit('will play', message);
+		if (this.voiceChannel) {
+			this.emit('will play', message);
 			if(this.workingTask > 0){
 			this.isPlaying = true;
 			this.waitForStart = true;
 			this.waitForStartMessage = message;
 			
 			} else {
-				self.voiceChannel.join().then(function(connection) {
-					self.conn = connection;
+				this.voiceChannel.join().then(function(connection) {
+					this.conn = connection;
 					
 					let url;
-					if(self.songQueue[0].key) {
-						url = PLEX_PLAY_START + self.songQueue[0].key + PLEX_PLAY_END;
+					if(this.songQueue[0].key) {
+						url = PLEX_PLAY_START + this.songQueue[0].key + PLEX_PLAY_END;
 					} else {
-						url = ytdl(self.songQueue[0].url, { quality: 'highestaudio' });
+						url = ytdl(this.songQueue[0].url, { quality: 'highestaudio' });
 					}
-					self.isPlaying = true;
-					let dispatcherFunc = function() {
+					this.isPlaying = true;
 
+					let self = this;
+					let dispatcherFunc = function() {
+						
 						if (self.songQueue.length > 0) {
 							if(self.songQueue[0].replay) {
 								self.songQueue[0].played = true;
@@ -461,13 +463,13 @@ class Bot extends EventEmitter{
 						}
 					};
 					
-					self.dispatcher = connection.play(url).on('finish', dispatcherFunc).on('start', () => {
-							if(!self.songQueue[0].played) {
-								var embedObj = self.songToEmbedObject(self.songQueue[0]);
+					this.dispatcher = connection.play(url).on('finish', dispatcherFunc).on('start', () => {
+							if(!this.songQueue[0].played) {
+								var embedObj = this.songToEmbedObject(this.songQueue[0]);
 								message.channel.send(language.BOT_PLAYSONG_SUCCES, embedObj);
 							}
 					});
-					self.dispatcher.setVolume(self.volume);
+					this.dispatcher.setVolume(this.volume);
 				});
 			}
 		} else {
@@ -513,6 +515,7 @@ class Bot extends EventEmitter{
 			}
 			if(this.voiceChannel) {
 					await this.voiceChannel.leave();
+					this.voiceChannel = null;
 			}
 		}
 	}
