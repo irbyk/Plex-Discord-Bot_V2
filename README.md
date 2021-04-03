@@ -80,9 +80,6 @@ Update the `config\keys.js` file with your information:
 
 ```javascript
 module.exports = {
-  'clientId'      : 'DISCORD_CLIENT_ID',
-  'clientSecret'  : 'DISCORD_CLIENT_SECRET',
-  'username'      : 'DISCORD_BOT_USERNAME',
   'botToken'      : 'DISCORD_BOT_TOKEN',
 };
 ```
@@ -92,9 +89,8 @@ And update the `config\plex.js` file with your Plex information:
 ```javascript
 module.exports= {
   'hostname'    : 'PLEX_LOCAL_IP',
-  'port'        : 'PLEX_LOCAL_PORT'
-  'username'    : 'PLEX_USERNAME',
-  'password'    : 'PLEX_PASSWORD',
+  'port'        : 'PLEX_LOCAL_PORT',
+  'https'       : false,
   'token'       : 'PLEX_TOKEN',
   'managedUser' : 'PLEX_MANAGED_USERNAME',
   'options'     : {
