@@ -1,11 +1,15 @@
 module.exports = {
   'hostname'    : '',
-  'port'        : 443,
-  'https'       : true,
+  'port'        : '',
+  'https'       : false,
   'token'       : '',
+  'managedUser' : '',
   'options'     : {
     'identifier': '',
     'product'   : '',
-    'version'   : ''
+    'version'   : '',
+    'deviceName': '',
+    'platform'  : '',
+    'device'    : ''
   }
 };
