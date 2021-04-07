@@ -8,8 +8,8 @@ function getRandomInt(max) {
 module.exports = {
   name : 'play',
   command : {
-    usage : '<playlist> ?r',
-    description : 'play the given playlist.\nThe \'r\' option is to play the playlist randomly.',
+    usage : '<playlist> -r',
+    description : 'play the given playlist.\nThe \'-r\' option is to play the playlist randomly.',
     process : async function(bot, client, message, args) {
       if(args.length < 1) {
         message.reply(bot.language.ERROR_NOT_ENOUGHT_ARG);
@@ -21,7 +21,7 @@ module.exports = {
       }
       let aleatoire = false;
       if(args.length == 2) {
-        if(args[1] != 'r') {
+        if(args[1] != '-r') {
           message.reply(bot.language.PLAYLIST_PLAY_R_ERROR);
           return ;
         }
@@ -38,8 +38,6 @@ module.exports = {
           }
           let playlist = JSON.parse(data);
           if(aleatoire){
-            let j = 0;
-            let inter;
             for(let i = 0; i < playlist.musiques.length; i++) {
               let j = getRandomInt(playlist.musiques.length);
               let inter = playlist.musiques[j];

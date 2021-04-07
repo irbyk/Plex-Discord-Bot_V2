@@ -4,7 +4,7 @@ module.exports = {
   name : 'delete',
   command : {
     usage : '<playlist> <index>',
-    description : 'remove on song from the given playlist (type !playlist print <playlist> to get the index).',
+    description : 'remove one song from the given playlist (type !playlist print <playlist> to get the index).',
     process : async function(bot, client, message, args) {
         if(args.length < 2) {
             message.reply(bot.language.ERROR_NOT_ENOUGHT_ARG);

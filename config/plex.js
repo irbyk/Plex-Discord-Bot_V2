@@ -1,8 +1,7 @@
 module.exports = {
   'hostname'    : '',
   'port'        : '',
-  'username'    : '',
-  'password'    : '',
+  'https'       : false,
   'token'       : '',
   'managedUser' : '',
   'options'     : {

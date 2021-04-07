@@ -3,7 +3,6 @@
 const EventEmitter = require('events');
 const PlexAPI = require('plex-api');
 const fs = require('fs');
-const readline = require('readline');
 const ytdl = require('ytdl-core');
 const config = require('../config/config');
 const xml2json = require('xml2js');
@@ -11,32 +10,32 @@ const request = require('request');
 const language = require('../'+config.language);
 	// plex constants ------------------------------------------------------------
 const plexConfig = require('../config/plex');
-const PLEX_PLAY_START = 'http://' + plexConfig.hostname + ':' + plexConfig.port;
+const PLEX_PLAY_START = (plexConfig.https ? 'https://' : 'http://') + plexConfig.hostname + ':' + plexConfig.port;
 const PLEX_PLAY_END = '?X-Plex-Token=' + plexConfig.token;
 
 class Bot extends EventEmitter{
 		constructor(client){
 				super();
 				this.client = client;
+
 				// plex config ---------------------------------------------------------------
 				this.language = language;
 				this.config = config;
 
-			// plex client ---------------------------------------------------------------
+				// plex client ---------------------------------------------------------------
 				this.plex = new PlexAPI({
-						hostname: plexConfig.hostname,
-						port: plexConfig.port,
-						username: plexConfig.username,
-						password: plexConfig.password,
-						token: plexConfig.token,
-						options: {
-						identifier: 'PlexBot',
-						product: plexConfig.options.identifier,
-						version: plexConfig.options.version,
-						deviceName: plexConfig.options.deviceName,
-						platform: plexConfig.options.platform,
-						device: plexConfig.options.device
-						}
+											hostname: plexConfig.hostname,
+											port: plexConfig.port,
+											token: plexConfig.token,
+											https: plexConfig.https,
+											options: {
+												identifier: plexConfig.options.identifier,
+												product: plexConfig.options.product,
+												version: plexConfig.options.version,
+												iceName: plexConfig.options.deviceName,
+												platform: plexConfig.options.platform,
+												device: plexConfig.options.device
+											}
 				});
 				// plex variables ------------------------------------------------------------
 				this.tracks = null;
@@ -58,7 +57,6 @@ class Bot extends EventEmitter{
 				this.workingTask = 0;
 				this.waitForStart = false;
 				this.waitForStartMessage = null;
-				this.test = null;
 		}
 	/**
 	 * Work like a simple semaphore to avoid conflict while playing song.
@@ -245,39 +243,19 @@ class Bot extends EventEmitter{
 	/**
 	 *
 	 */
-	async jouerUneMusique(musique, vChannel, callback) {
-		let self = this;
-		let connection = await vChannel.join();
-		this.conn = connection;
-		this.voiceChannel = vChannel;
-		let url;
-		if(musique.key) {
-			url = PLEX_PLAY_START + musique.key + PLEX_PLAY_END;
-		} else {
-			url = ytdl(musique.url, { quality: 'highestaudio' });
-		}
-		self.isPlaying = true;
-		self.dispatcher = connection.play(url).on('finish', () => callback()).on('error', function (){ throw "problème de lecture."});
-		self.dispatcher.setVolume(self.volume);
-		return self.dispatcher;
-	};
-
-	/**
-	 *
-	 */
-	findPlaylist(query, message) {
+	findPlaylist(query, message, random) {
 		let self = this;
 		self.findTracksOnPlex(query, 0, 10, 15).then(function(res) {
 			let key = res.MediaContainer.Metadata[0].key;
 			let url = PLEX_PLAY_START + key + PLEX_PLAY_END;
-			self.loadPlaylist(url, message);
+			self.loadPlaylist(url, message, random);
 		});
 	}
 
 	/**
 	 *
 	 */
-	loadPlaylist(url, message) {
+	loadPlaylist(url, message, random=false) {
 		let self = this;
 		request(url, (err, res, body) => {
 			xml2json.parseString(body.toString('utf8'), {}, (err, jsonObj) => {
@@ -298,6 +276,20 @@ class Bot extends EventEmitter{
 					}
 					self.songQueue.push({'artist' : artist, 'title': title, 'key': key});
 				}
+
+				if (random) {
+					let h = 0;
+					if (this.isPlaying)
+						h = 1;
+					
+					for(let i = h; i < self.songQueue.length; i++) {
+						let j = this.getRandomNumber(self.songQueue.length -1) + h;
+						let inter = self.songQueue[j];
+						self.songQueue[j] = self.songQueue[i];
+						self.songQueue[i] = inter;
+					}
+				}
+
 				if(!this.isPlaying) {
 					this.playSong(message);
 				}
@@ -419,26 +411,24 @@ class Bot extends EventEmitter{
 	}
 
 	/**
-	 * Play song when provided with index number, track, and message
+	 *
 	 */
-	async playSong(message) {
-		//Se connecter
-		//
+	async playSong(message) {		
 		
-		
-		let self = this;
-		self.voiceChannel = message.member.voice.channel;
+		if (this.voiceChannel == null)
+			this.voiceChannel = message.member.voice.channel;
 
-		if (self.voiceChannel) {
-			self.emit('will play', message);
+		if (this.voiceChannel) {
+			this.emit('will play', message);
+			
 			if(this.workingTask > 0){
-			this.isPlaying = true;
-			this.waitForStart = true;
-			this.waitForStartMessage = message;
+				this.isPlaying = true;
+				this.waitForStart = true;
+				this.waitForStartMessage = message;
 			
 			} else {
-				let test;
-				self.voiceChannel.join().then(function(connection) {
+				let self = this;
+				this.voiceChannel.join().then(function(connection) {
 					self.conn = connection;
 					
 					let url;
@@ -448,7 +438,9 @@ class Bot extends EventEmitter{
 						url = ytdl(self.songQueue[0].url, { quality: 'highestaudio' });
 					}
 					self.isPlaying = true;
+
 					let dispatcherFunc = function() {
+						
 						if (self.songQueue.length > 0) {
 							if(self.songQueue[0].replay) {
 								self.songQueue[0].played = true;
@@ -458,7 +450,7 @@ class Bot extends EventEmitter{
 								if (self.songQueue.length > 0) {
 									self.playSong(message);
 								}
-								// no songs left in queue, continue with playback completetion events
+								// no songs left in queue, continue with playback completion events
 								else {
 									self.isPlaying = false;
 									self.emit('finish', message);
@@ -471,18 +463,14 @@ class Bot extends EventEmitter{
 							self.playbackCompletion(message);
 						}
 					};
-					self.test = self.client.voice.createBroadcast();
-					self.test.play(url);
-					self.dispatcher = connection.play(self.test).on('finish', dispatcherFunc).on('start', () => {
+					
+					self.dispatcher = connection.play(url).on('finish', dispatcherFunc).on('start', () => {
 							if(!self.songQueue[0].played) {
 								var embedObj = self.songToEmbedObject(self.songQueue[0]);
 								message.channel.send(language.BOT_PLAYSONG_SUCCES, embedObj);
 							}
 					});
 					self.dispatcher.setVolume(self.volume);
-					self.test.on('finish', () => {
-						console.log('finish');
-					});
 				});
 			}
 		} else {
@@ -528,6 +516,7 @@ class Bot extends EventEmitter{
 			}
 			if(this.voiceChannel) {
 					await this.voiceChannel.leave();
+					this.voiceChannel = null;
 			}
 		}
 	}
