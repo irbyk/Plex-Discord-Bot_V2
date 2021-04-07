@@ -24,18 +24,18 @@ class Bot extends EventEmitter{
 
 				// plex client ---------------------------------------------------------------
 				this.plex = new PlexAPI({
-                                            hostname: plexConfig.hostname,
-                                            port: plexConfig.port,
-                                            token: plexConfig.token,
+											hostname: plexConfig.hostname,
+											port: plexConfig.port,
+											token: plexConfig.token,
 											https: plexConfig.https,
-                                            options: {
-                                            	identifier: plexConfig.options.identifier,
-                                            	product: plexConfig.options.product,
-                                            	version: plexConfig.options.version,
+											options: {
+												identifier: plexConfig.options.identifier,
+												product: plexConfig.options.product,
+												version: plexConfig.options.version,
 												iceName: plexConfig.options.deviceName,
 												platform: plexConfig.options.platform,
 												device: plexConfig.options.device
-                                        	}
+											}
 				});
 				// plex variables ------------------------------------------------------------
 				this.tracks = null;
