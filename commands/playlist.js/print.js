@@ -47,7 +47,7 @@ module.exports = {
                   premier = true;
 
                   if (playlist.musiques.length == 0){
-                      message.channel.send(bot.language.PLAYLIST_EMPTY.format({ playlist_name : playlist.nom } + '\n'));
+                      message.reply(bot.language.PLAYLIST_EMPTY.format({ playlist_name : playlist.nom }));
                       return;
                   }
 
