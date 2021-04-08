@@ -42,9 +42,15 @@ module.exports = {
                   if(playlist.musiques.length > 1) {
                     embedObj.embed.fields[0].name += 's';
                   }
-                  let ligne = '';
+                  
                   let indice = 0;
                   premier = true;
+
+                  if (playlist.musiques.length == 0){
+                      message.channel.send(bot.language.PLAYLIST_EMPTY.format({ playlist_name : playlist.nom } + '\n'));
+                      return;
+                  }
+
                   playlist.musiques.forEach(function (musique){
                       indice++;
                       let ligne = bot.language.PLAYLIST_PRINT_INFO.format({index : indice, title : musique.titre, artist : musique.artiste}) + '\n';

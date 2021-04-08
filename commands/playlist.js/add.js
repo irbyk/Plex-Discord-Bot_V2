@@ -41,7 +41,6 @@ module.exports = {
               if (taille > 1) {
                   let messageLines = '\n';
                   bot.tracks = res.MediaContainer.Metadata;
-                  let resultSize = res.MediaContainer.size;
                   bot.plexQuery = nomMusique; // set query for !nextpage
                   bot.plexOffset = taille; // set paging
                   bot.botPlaylist = args[0];
