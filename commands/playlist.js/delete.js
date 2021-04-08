@@ -32,7 +32,7 @@ module.exports = {
                         }
                     });
                     
-                    await message.reply(bot.language.PLAYLIST_DELETE_SUCCES.format({title: musique.titre, artist : musique.artiste, playlist_name : playlist.nom}));
+                    await message.reply(bot.language.PLAYLIST_DELETE_SUCCES.format({title: musique[0].titre, artist : musique[0].artiste, playlist_name : playlist.nom}));
             });
     }
   }
