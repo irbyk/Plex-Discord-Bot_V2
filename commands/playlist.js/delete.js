@@ -30,8 +30,9 @@ module.exports = {
                             await message.reply(bot.language.WRITTING_PLAYLIST_ERROR);
                             throw err;
                         }
-                        message.reply(bot.language.PLAYLIST_DELETE_SUCCES.format({title: musique.titre, artist : musique.artiste, playlist_name : playlist.nom}));
                     });
+                    
+                    message.reply(bot.language.PLAYLIST_DELETE_SUCCES.format({title: musique.titre, artist : musique.artiste, playlist_name : playlist.nom}));
             });
     }
   }
