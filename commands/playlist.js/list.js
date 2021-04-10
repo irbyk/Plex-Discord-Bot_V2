@@ -31,6 +31,12 @@ module.exports = {
                     },
                 }
             };
+
+            if (files.length == 0){
+                message.channel.send('\n**' + bot.language.PLAYLIST_NONE_FOUND + '**\n');
+                return;
+            }
+
             files.forEach(function (file) {
                 embedObj.embed.fields[0].value = embedObj.embed.fields[0].value + file.slice(0, -'.playlist'.length) + '\n';
             });

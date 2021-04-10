@@ -24,9 +24,9 @@ module.exports = {
             ytdl.getInfo(nomMusique).then(function(songInfo) {
               let musique = {
                 query : nomMusique,
-                artiste : songInfo.author.name,
-                titre : songInfo.title,
-                url : songInfo.video_url,
+                artiste : songInfo.videoDetails.author.name,
+                titre : songInfo.videoDetails.title,
+                url : songInfo.videoDetails.video_url,
               };
               bot.ajoutPlaylist(args[0], musique, message);
             });
@@ -41,7 +41,6 @@ module.exports = {
               if (taille > 1) {
                   let messageLines = '\n';
                   bot.tracks = res.MediaContainer.Metadata;
-                  let resultSize = res.MediaContainer.size;
                   bot.plexQuery = nomMusique; // set query for !nextpage
                   bot.plexOffset = taille; // set paging
                   bot.botPlaylist = args[0];

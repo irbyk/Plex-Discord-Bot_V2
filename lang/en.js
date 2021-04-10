@@ -60,12 +60,14 @@ module.exports = {
   PLAYLIST_CREATE_ERROR_ALREADY_EXIST : 'this playlist already exist.',
   PLAYLIST_CREATE_ERROR_IO : 'an error appear while I try to creat the playlist :cry:.',
   PLAYLIST_CREATE_SUCCES : 'the playlist \"{name}\" has been created.',
-  PLAYLIST_DELETE_SUCCES : 'the song \"{title} - {artist}\" has been remove from **{playlist_name}**.',
-  PLAYLIST_ERROR_FOLDER : 'an error occured with the folder :cry:.',
-  PLAYLIST_PLAY_SUCCES : 'the playlist has been add to the queue.',
+  PLAYLIST_DELETE_SUCCES : 'the song \"{title} - {artist}\" has been removed from **{playlist_name}**.',
+  PLAYLIST_ERROR_FOLDER : 'an error occurred with the folder :cry:.',
+  PLAYLIST_PLAY_SUCCES : 'the playlist has been added to the queue.',
   PLAYLIST_PLAY_R_ERROR : 'you mean "-r" right ?',
   PLAYLIST_PRINT_INFO : '{index} - {title} - {artist}',
   PLAYLIST_PRINT_SUCCES : 'There are {number} song{plurial} in this playlist.',
   PLAYLIST_REMOVE_ERROR : 'an error has occured during the removal procedure :cry:.',
-  PLAYLIST_REMOVE_SUCCES : 'the playlist \"{name}\" has been removed.'
+  PLAYLIST_REMOVE_SUCCES : 'the playlist \"{name}\" has been removed.',
+  PLAYLIST_NONE_FOUND : 'There are no playlists created yet.',
+  PLAYLIST_EMPTY : 'The playlist **{playlist_name}** is empty.'
 }
