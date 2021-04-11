@@ -298,9 +298,13 @@ class Bot extends EventEmitter{
 	async findAlbum(query, message) {
 		// Album : type = 9
 		const res = await this.findTracksOnPlex(query, 0, 10, 9);
-		let key = res.MediaContainer.Metadata[0].key;
-		let url = PLEX_PLAY_START + key + PLEX_PLAY_END;
-		this.loadAlbum(url, message);
+		try {
+			let key = res.MediaContainer.Metadata[0].key;
+			let url = PLEX_PLAY_START + key + PLEX_PLAY_END;
+			this.loadAlbum(url, message);
+		} catch (err) {
+			throw new Error('The album was not found.');
+		}
 	}
 
 	/**
