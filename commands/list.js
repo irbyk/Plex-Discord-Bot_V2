@@ -24,7 +24,7 @@ module.exports = {
         };break;
         case 'reset': offset = 0;
         default:
-          for (key in bot.cache_library) {
+          for (let key in bot.cache_library) {
             try {
               const res = await bot.plex.query('/library/sections/' + key + '/all?type=10&X-Plex-Container-Start=' + offset + '&X-Plex-Container-Size=' + pageSize);
               offset += res.MediaContainer.Metadata.length < pageSize ? 0: pageSize;
