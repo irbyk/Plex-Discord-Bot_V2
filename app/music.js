@@ -1,8 +1,8 @@
 module.exports = function(client, bot) {
   // plex commands -------------------------------------------------------------
-  var plexCommands = require('../commands');
+  const plexCommands = require('../commands');
   // when bot is ready
-  client.on('ready', function() {
+  client.once('ready', function() {
     console.log('bot ready');
     console.log('logged in as: ' + client.user.tag);
 

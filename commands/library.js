@@ -1,3 +1,88 @@
+function newEmbedObjList(isEmpty = false){
+    return {
+            embed: {
+              color: 2389639,
+              description: 'List of existing libraries : ',
+              fields: [
+                {
+                  name: 'Name',
+                  value:isEmpty ? '*None*' : '',
+                  inline: true
+                }, {
+                  name: 'Key',
+                  value: isEmpty ? '*None*' : '',
+                  inline: true
+                }, {
+                    name: 'Moods',
+                    value: isEmpty ? '*None*' : '',
+                    inline: true
+                  }]
+            }
+          };
+}
+
+
+function newEmbedObjListLoaded(isEmpty = false){
+    return {
+      embed: {
+        color: 2389639,
+        description: 'List of loaded libraries : ',
+        fields: [
+          {
+            name: 'Name',
+            value: isEmpty ? '*None*' : '',
+            inline: true
+          }, {
+            name: 'Key',
+            value: isEmpty ? '*None*' : '',
+            inline: true
+          }, {
+            name: 'Moods',
+            value: isEmpty ? '*None*' : '',
+            inline: true
+          }]
+      }
+    };
+}
+
+const LIMIT_CARACTER_EMBED_FIELD = 1024;
+function addNewElement(message, embedObj, elementToAdd, functionNewEmbedObj) {
+    if (
+      (embedObj.embed.fields[0].value + elementToAdd[0]).length > LIMIT_CARACTER_EMBED_FIELD ||
+      (embedObj.embed.fields[1].value + elementToAdd[1]).length > LIMIT_CARACTER_EMBED_FIELD ||
+      (embedObj.embed.fields[2].value + elementToAdd[2]).length > LIMIT_CARACTER_EMBED_FIELD) {
+      message.channel.send(embedObj);
+      embedObj = functionNewEmbedObj(false);
+    }
+    embedObj.embed.fields[0].value += elementToAdd[0];
+    embedObj.embed.fields[1].value += elementToAdd[1];
+    embedObj.embed.fields[2].value += elementToAdd[2];
+}
+
+function fileEmbedObj(message, list, embedObj, functionNewEmbedObj) {
+    for (let i of list) {
+      let newElement = ['','',''];
+      newElement[0] = i.name + '\n';
+      newElement[1] = i.key + '\n';
+      if (i.mood) {
+        for(let j in i.mood) {
+          if((newElement[2] + i.mood[j].name + ' ').length > LIMIT_CARACTER_EMBED_FIELD - 1) {
+              if(newElement[2].length <= LIMIT_CARACTER_EMBED_FIELD - 4) {
+                newElement[2] += '...';
+              }
+              newElement[2] += '\n';
+              break;
+          } else {
+              newElement[2] += i.mood[j].name + ' ';
+          }
+        }
+      } else {
+          newElement[2] += '*None*\n';
+      }
+      addNewElement(message, embedObj, newElement, functionNewEmbedObj);
+  }
+}
+
 module.exports = {
   name : 'library',
   command : {
@@ -8,73 +93,12 @@ module.exports = {
       switch(args[0]) {
         case 'list': {
           let list = await bot.getLibrariesList();
-          let embedObj = {
-            embed: {
-              color: 2389639,
-              description: 'List of existing libraries : ',
-              fields: [
-                {
-                  name: 'Name',
-                  value:list.length == 0 ? '*None*' : '',
-                  inline: true
-                }, {
-                  name: 'Key',
-                  value: list.length == 0 ? '*None*' : '',
-                  inline: true
-                }, {
-                    name: 'Moods',
-                    value: list.length == 0 ? '*None*' : '',
-                    inline: true
-                  }]
-            }
-          };
-          for (let i of list) {
-              embedObj.embed.fields[0].value += i.name + '\n';
-              embedObj.embed.fields[1].value += i.key + '\n';
-              if(i.mood) {
-                for(let j in i.mood) {
-                  embedObj.embed.fields[2].value += i.mood[j].name + ' ';
-                }
-              } else {
-                  embedObj.embed.fields[2].value += '*None*';
-              }
-              embedObj.embed.fields[2].value += '\n';
-          }
+          let embedObj = newEmbedObjList(list.length == 0);
+          fileEmbedObj(message, list, embedObj, newEmbedObjList)
           message.channel.send(embedObj);
           if(Object.keys(bot.cache_library).length > 0) {
-            embedObj = {
-              embed: {
-                color: 2389639,
-                description: 'List of loaded libraries : ',
-                fields: [
-                  {
-                    name: 'Name',
-                    value: bot.cache_library.length == 0 ? '*None*' : '',
-                    inline: true
-                  }, {
-                    name: 'Key',
-                    value: bot.cache_library.length == 0 ? '*None*' : '',
-                    inline: true
-                  }, {
-                    name: 'Moods',
-                    value: bot.cache_library.length == 0 ? '*None*' : '',
-                    inline: true
-                  }]
-              }
-            };
-            for (let i in bot.cache_library) {
-              embedObj.embed.fields[0].value += bot.cache_library[i].name + '\n';
-              embedObj.embed.fields[1].value += bot.cache_library[i].key + '\n';
-              if(bot.cache_library[i].mood) {
-                for(let j in bot.cache_library[i].mood) {
-                  embedObj.embed.fields[2].value += bot.cache_library[i].mood[j].name + ' ';
-                }
-              } else {
-                embedObj.embed.fields[2].value += '*None*';
-              }
-              embedObj.embed.fields[2].value += '\n';
-            }
-            
+            embedObj = newEmbedObjListLoaded(false);
+            fileEmbedObj(message, Object.values(bot.cache_library), embedObj, newEmbedObjListLoaded);
           } else {
             embedObj = {
               embed: {
