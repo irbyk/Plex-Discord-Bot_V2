@@ -57,6 +57,7 @@ function addNewElement(message, embedObj, elementToAdd, functionNewEmbedObj) {
     embedObj.embed.fields[0].value += elementToAdd[0];
     embedObj.embed.fields[1].value += elementToAdd[1];
     embedObj.embed.fields[2].value += elementToAdd[2];
+    return embedObj;
 }
 
 function fileEmbedObj(message, list, embedObj, functionNewEmbedObj) {
@@ -79,8 +80,9 @@ function fileEmbedObj(message, list, embedObj, functionNewEmbedObj) {
       } else {
           newElement[2] += '*None*\n';
       }
-      addNewElement(message, embedObj, newElement, functionNewEmbedObj);
+      embedObj = addNewElement(message, embedObj, newElement, functionNewEmbedObj);
   }
+  return embedObj;
 }
 
 module.exports = {
@@ -94,11 +96,11 @@ module.exports = {
         case 'list': {
           let list = await bot.getLibrariesList();
           let embedObj = newEmbedObjList(list.length == 0);
-          fileEmbedObj(message, list, embedObj, newEmbedObjList)
+          embedObj = fileEmbedObj(message, list, embedObj, newEmbedObjList)
           message.channel.send(embedObj);
           if(Object.keys(bot.cache_library).length > 0) {
             embedObj = newEmbedObjListLoaded(false);
-            fileEmbedObj(message, Object.values(bot.cache_library), embedObj, newEmbedObjListLoaded);
+            embedObj = fileEmbedObj(message, Object.values(bot.cache_library), embedObj, newEmbedObjListLoaded);
           } else {
             embedObj = {
               embed: {
