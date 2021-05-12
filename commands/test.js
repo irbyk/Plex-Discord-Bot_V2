@@ -1,3 +1,4 @@
+const packageJson = require('../package.json');
 module.exports = {
   name : 'plextest',
   command : {
@@ -6,11 +7,13 @@ module.exports = {
     process: function(bot, client, message) {
       bot.plex.query('/').then(function(result) {
         if(message) {
-          message.reply('name: ' + result.MediaContainer.friendlyName +'\nv: ' + result.MediaContainer.version);
+          message.reply('name: ' + result.MediaContainer.friendlyName +'\nv: ' + result.MediaContainer.version + '\n'+
+          'Bot version : ' + packageJson.version);
         }
         else {
           console.log('name: ' + result.MediaContainer.friendlyName);
           console.log('v: ' + result.MediaContainer.version);
+          console.log('bot version: ' + packageJson.version);
         }
       }, function(err) {
         console.log('ya done fucked up');
