@@ -11,3 +11,20 @@ const bot = new Bot(client);
 require('./app/music.js')(client, bot);
 
 client.login(keys.botToken);
+
+async function quitter(){
+	try {
+		console.log('Bot shutdown');
+	} catch (e){
+		console.error(e.toString());
+	} finally {
+		client.destroy();
+		process.exit(0);
+	}
+}
+
+
+
+process.on('SIGTERM', quitter);
+
+process.on('SIGINT', quitter);

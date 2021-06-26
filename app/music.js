@@ -18,7 +18,7 @@ module.exports = function(client, bot) {
         if(bot.config.canal_ecoute == '' || message.channel.name == bot.config.canal_ecoute) {
             var cmdTxt = msg.split(/\s+/)[0].substring(bot.config.caracteres_commande.length, msg.length).toLowerCase();
             var query = msg.substring(cmdTxt.length+2);
-            if(cmdTxt == "?") {
+            if(cmdTxt === "?") {
               if(query) {
                 /*let cmdTxtAide = query.split(" ");
                 let cmdAide = plexCommands[cmdTxtAide[0]];
@@ -61,6 +61,9 @@ module.exports = function(client, bot) {
             if (cmd){
               try {
                 cmd.process(bot, client, message, query);
+                if (process.catch !== undefined) {
+                  process.catch(err => console.log(e));
+                }
               }
               catch (e) {
                 console.log(e);
