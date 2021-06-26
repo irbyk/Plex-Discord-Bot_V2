@@ -365,7 +365,7 @@ class Bot extends EventEmitter{
 					}
 					messageLines += language.BOT_FIND_SONG_INFO_MUSIC.format({index : t+1, artist : artist, title : this.tracks[t].title}) + '\n';
 				}
-				messageLines += language.BOT_FIND_SONG_INFO;
+				messageLines += language.BOT_FIND_SONG_INFO.format({caracteres_commande: this.config.caracteres_commande});
 				message.reply(messageLines);
 			}
 			else {
