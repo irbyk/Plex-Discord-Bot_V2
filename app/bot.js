@@ -7,6 +7,8 @@ const ytdl = require('ytdl-core');
 const config = require('../config/config');
 const xml2json = require('xml2js');
 const request = require('request');
+const fetch = require('node-fetch');
+const { Readable } = require('stream');
 const language = require('../'+config.language);
 // plex constants ------------------------------------------------------------
 const plexConfig = require('../config/plex');
@@ -454,7 +456,9 @@ class Bot extends EventEmitter{
 						this.playbackCompletion(message);
 					}
 				};
-				this.dispatcher = connection.play(url).on('finish', dispatcherFunc).on('start', () => {
+				const readstream = await fetch(url);
+				// 20 971 520 bits = 20Mb
+				this.dispatcher = connection.play(Readable.from(readstream.body, {highWaterMark: 20971520})).on('finish', dispatcherFunc).on('start', () => {
 						if(!this.songQueue[0].played) {
 							var embedObj = this.songToEmbedObject(this.songQueue[0]);
 							message.channel.send(language.BOT_PLAYSONG_SUCCES, embedObj);

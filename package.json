@@ -4,7 +4,8 @@
 	"description": "a plex bot for discord",
 	"main": "index.js",
 	"scripts": {
-		"test": "echo \"Error: no test specified\" && exit 1"
+		"test": "echo \"Error: no test specified\" && exit 1",
+		"start": "node index.js"
 	},
 	"author": "danxfisher, irbyk",
 	"license": "ISC",
@@ -16,6 +17,7 @@
 		"ffmpeg-static": "^4.4.0",
 		"got": "^11.8.2",
 		"libsodium-wrappers": "^0.7.9",
+		"node-fetch": "^2.6.1",
 		"plex-api": "^5.2.5",
 		"utf-8-validate": "^5.0.5",
 		"ytdl-core": "^4.8.3"

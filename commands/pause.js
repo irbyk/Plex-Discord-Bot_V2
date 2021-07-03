@@ -7,6 +7,12 @@ module.exports = {
       if (bot.isPlaying) {
         bot.dispatcher.pause(true); // pause song
         bot.isPaused = true;
+        bot.dispatcher.on('debug',  (info) => {
+          console.log(`Dispatcher : ${info}`);
+        });
+        bot.dispatcher.on('error',  (err) => {
+          console.error(`Dispatcher : ${err}`);
+        });
         var embedObj = {
           embed: {
             color: 16424969,
