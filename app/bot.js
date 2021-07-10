@@ -463,7 +463,7 @@ class Bot extends EventEmitter{
 							var embedObj = this.songToEmbedObject(this.songQueue[0]);
 							message.channel.send(language.BOT_PLAYSONG_SUCCES, embedObj);
 						}
-				});
+				}).on('error', (err) => console.log(err));
 				this.dispatcher.setVolume(this.volume);
 			}
 		} else {
