@@ -460,7 +460,7 @@ class Bot extends EventEmitter{
 				// 20 971 520 bits = 20Mb
 				this.dispatcher = connection.play(Readable.from(readstream.body, {highWaterMark: 20971520})).on('finish', dispatcherFunc).on('start', () => {
 						if(!this.songQueue[0].played) {
-							var embedObj = this.songToEmbedObject(this.songQueue[0]);
+							let embedObj = this.songToEmbedObject(this.songQueue[0]);
 							message.channel.send(language.BOT_PLAYSONG_SUCCES, embedObj);
 						}
 				}).on('error', (err) => console.log(err));

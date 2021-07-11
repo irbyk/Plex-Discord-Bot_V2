@@ -1,0 +1,22 @@
+trigger:
+  branches:
+    include:
+    - master
+  paths:
+    exclude:
+    - 'README.md'
+    - 'azure-pipelines.yml'
+
+pool: Default
+
+steps:
+- task: Docker@2
+  inputs:
+    containerRegistry: 'docker hub'
+    repository: 'jintekicorp/plexbot'
+    command: 'buildAndPush'
+    addPipelineData: false
+    Dockerfile: '**/Dockerfile'
+    tags: |
+      $(Build.BuildId)
+      latest
