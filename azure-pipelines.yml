@@ -19,4 +19,4 @@ steps:
     Dockerfile: '**/Dockerfile'
     tags: |
       $(Build.BuildId)
-      latest
+      irbyk-latest
