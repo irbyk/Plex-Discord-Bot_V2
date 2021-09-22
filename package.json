@@ -20,6 +20,6 @@
 		"node-fetch": "^2.6.1",
 		"plex-api": "^5.2.5",
 		"utf-8-validate": "^5.0.5",
-		"ytdl-core": "^4.8.3"
+		"ytdl-core": "^4.9.1"
 	}
 }

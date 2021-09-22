@@ -424,11 +424,13 @@ class Bot extends EventEmitter{
 				const connection = await this.voiceChannel.join();
 				this.conn = connection;
 				
-				let url;
+				let readstream;
 				if(this.songQueue[0].key) {
-					url = PLEX_PLAY_START + this.songQueue[0].key + PLEX_PLAY_END;
+					const urlPlex = PLEX_PLAY_START + this.songQueue[0].key + PLEX_PLAY_END;
+					let response = await fetch(urlPlex);
+					readstream = Readable.from(response.body, {highWaterMark: 20971520});
 				} else {
-					url = ytdl(this.songQueue[0].url, { quality: 'highestaudio' });
+					readstream = ytdl(this.songQueue[0].url, { quality: 'highestaudio' });
 				}
 				this.isPlaying = true;
 
@@ -456,9 +458,8 @@ class Bot extends EventEmitter{
 						this.playbackCompletion(message);
 					}
 				};
-				const readstream = await fetch(url);
 				// 20 971 520 bits = 20Mb
-				this.dispatcher = connection.play(Readable.from(readstream.body, {highWaterMark: 20971520})).on('finish', dispatcherFunc).on('start', () => {
+				this.dispatcher = connection.play(readstream).on('finish', dispatcherFunc).on('start', () => {
 						if(!this.songQueue[0].played) {
 							let embedObj = this.songToEmbedObject(this.songQueue[0]);
 							message.channel.send(language.BOT_PLAYSONG_SUCCES, embedObj);
