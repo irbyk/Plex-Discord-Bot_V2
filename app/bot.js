@@ -430,7 +430,7 @@ class Bot extends EventEmitter{
 					let response = await fetch(urlPlex);
 					readstream = Readable.from(response.body, {highWaterMark: 20971520});
 				} else {
-					readstream = ytdl(this.songQueue[0].url, { quality: 'highestaudio' });
+					readstream = ytdl(this.songQueue[0].url, { format: 'audioonly', quality: 'highestaudio' });
 				}
 				this.isPlaying = true;
 
