@@ -5,21 +5,32 @@
 	"main": "index.js",
 	"scripts": {
 		"test": "echo \"Error: no test specified\" && exit 1",
-		"start": "node index.js"
+		"start": "node build/index.js",
+		"build": "tsc -p tsconfig.json"
 	},
 	"author": "danxfisher, irbyk",
 	"license": "ISC",
 	"dependencies": {
 		"@discordjs/opus": "^0.5.3",
+		"@discordjs/voice": "^0.7.5",
 		"bufferutil": "^4.0.3",
-		"discord.js": "^12.5.3",
+		"discord.js": "^13.3.1",
 		"erlpack": "^0.1.3",
 		"ffmpeg-static": "^4.4.0",
-		"got": "^11.8.2",
 		"libsodium-wrappers": "^0.7.9",
-		"node-fetch": "^2.6.1",
-		"plex-api": "^5.2.5",
+		"miniget": "^4.2.1",
+		"node-fetch": "^2.6.6",
+		"plex-api-headers": "^2.0.0",
 		"utf-8-validate": "^5.0.5",
+		"uuid": "^8.3.2",
+		"xml2js": "^0.4.23",
 		"ytdl-core": "^4.9.1"
+	},
+	"devDependencies": {
+		"@types/node": "^16.11.9",
+		"@types/node-fetch": "^2.5.12",
+		"@types/uuid": "^8.3.3",
+		"@types/xml2js": "^0.4.9",
+		"typescript": "^4.5.2"
 	}
 }

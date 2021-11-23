@@ -1,0 +1,6 @@
+{
+  "canal_ecoute"        : "bot",
+  "caracteres_commande"  : "%",
+  "dossier_playlists" : "playlists/",
+  "language" : "lang/en.js"
+}

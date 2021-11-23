@@ -1,0 +1,14 @@
+{
+  "hostname"    : "poyo1.ddns.net",
+  "port"        : "32400",
+  "token"       : "Me_wXSqqS3U2ZTzUX9ob",
+  "managedUser" : "Jean-Billy",
+  "options"     : {
+    "identifier": "APP_IDENTIFIER",
+    "product"   : "APP_PRODUCT_NAME",
+    "version"   : "APP_VERSION_NUMBER",
+    "deviceName": "Le-Serveur",
+    "platform"  : "Discord",
+    "device"    : "Discord"
+  }
+}
