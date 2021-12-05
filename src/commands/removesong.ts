@@ -1,11 +1,13 @@
+import { Client, EmbedField, Message, MessageEmbed } from "discord.js";
+import { Bot, trackToSong } from "../app/bot";
+
 module.exports = {
   name : 'removesong',
   command : {
     usage: '<song queue number>',
     description: 'removes song by index from the song queue',
-    process: function(bot, client, message, query) {
-      let songNumber = query;
-      songNumber = parseInt(songNumber);
+    process: function(bot: Bot, client: Client, message: Message, query: string) {
+      let songNumber = parseInt(query);
       songNumber = songNumber - 1;
 
       if (bot.songQueue.length > 0 ) {

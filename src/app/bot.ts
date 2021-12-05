@@ -1,5 +1,5 @@
 'use strict';
-import { Client, Message, VoiceChannel } from 'discord.js';
+import { Client, Message, MessageEmbed, VoiceChannel } from 'discord.js';
 import fs from 'fs';
 import EventEmitter from 'events';
 import ytdl from 'ytdl-core';
@@ -9,7 +9,7 @@ import { Readable } from 'stream';
 import { Language } from '../utils/language';
 import { Config } from '../utils/config';
 import { Mood, PlexAPI, Track } from '../utils/plex';
-import { createAudioPlayer, AudioPlayer, createAudioResource, VoiceConnection, joinVoiceChannel } from '@discordjs/voice';
+import { createAudioPlayer, AudioPlayer, createAudioResource, VoiceConnection, joinVoiceChannel, AudioResource } from '@discordjs/voice';
 
 //import config from '../../config/config.json'
 // Bot module ------------------------------------------------------------------
@@ -49,7 +49,7 @@ interface Song {
 /**
  *
 */
-function trackToSong(track: Track): Song {
+export function trackToSong(track: Track): Song {
 	const key = track.Media[0].Part[0].key;
 	let artist = '';
 	const title = track.title;
@@ -72,25 +72,26 @@ function trackToSong(track: Track): Song {
 
 export class Bot extends EventEmitter{
 	
-	private client: Client;
+	public client: Client;
 	public language: any;
 	public config: Config;
 	public plex: PlexAPI;
-	private tracks: Track[];
-	private plexQuery: string;
-	private plexOffset: number;
-	private plexPageSize: number;
+	public tracks: Track[];
+	public plexQuery: string;
+	public plexOffset: number;
+	public plexPageSize: number;
 	public isPlaying: boolean;
-	private isPaused: boolean;
-	private songQueue: Song[];
-	private volume: number;
-	private audioPlayer: AudioPlayer;
-	private connection: VoiceConnection | undefined;
-	private voiceChannel: VoiceChannel | undefined;
-	private workingTask: number;
-	private waitForStart: boolean;
-	private waitForStartMessage: Message | undefined;
-	private cache_library: any;
+	public isPaused: boolean;
+	public songQueue: Song[];
+	public volume: number;
+	public audioPlayer: AudioPlayer;
+	public connection: VoiceConnection | undefined;
+	public voiceChannel: VoiceChannel | undefined;
+	public workingTask: number;
+	public waitForStart: boolean;
+	public waitForStartMessage: Message | undefined;
+	public cache_library: any;
+	public resourceLoaded: AudioResource | undefined;
 
 		constructor(client: Client){
 				super();
@@ -497,7 +498,7 @@ export class Bot extends EventEmitter{
 			} else {
 				
 				let readstream;
-				if(this.songQueue[0].key) {
+				if(this.songQueue[0].origin === 'Plex' ) {
 					const urlPlex = PLEX_PLAY_START + this.songQueue[0].key + PLEX_PLAY_END;
 					let response = await fetch(urlPlex);
 					readstream = Readable.from(response.body, {highWaterMark: 1 << 32});
@@ -533,6 +534,7 @@ export class Bot extends EventEmitter{
 				};
 				let resource = createAudioResource(readstream);
 				resource.volume!.setVolume(this.volume);
+				this.resourceLoaded = resource;
 				this.audioPlayer.play(resource);
 				console.log(this.audioPlayer.eventNames());
 				/*this.dispatcher = connection.play(readstream, {highWaterMark: 200000000}).on('finish', dispatcherFunc).on('start', () => {
@@ -552,8 +554,8 @@ export class Bot extends EventEmitter{
 	 *
 	 */
 	songToEmbedObject(song: Song) {
-		const embedObj = {
-			embed: {
+		const embedObj = new MessageEmbed(
+			{
 				color: 4251856,
 				fields:
 				[
@@ -572,7 +574,7 @@ export class Bot extends EventEmitter{
 					text: language.NUMBER_MUSIC_IN_QUEUE.format({number : this.songQueue.length, plurial : (this.songQueue.length > 1 ? 's' : '')})
 				},
 			}
-		};
+		);
 		return embedObj;
 	}
 
@@ -582,7 +584,7 @@ export class Bot extends EventEmitter{
 	async playbackCompletion() {
 		if(!this.isPlaying) {
 			if(this.connection){
-					await this.connection.destroy();
+					this.connection.destroy();
 			}
 		}
 	}
@@ -632,7 +634,14 @@ export class Bot extends EventEmitter{
 	}
 };
 
-async function youtubeURLToMusic(youtubeURL: string) {
+export async function youtubeURLToMusic(youtubeURL: string): Promise<Song> {
 	const songInfo = await ytdl.getInfo(youtubeURL);
-	return {'artist' : songInfo.videoDetails.author.name , 'title': songInfo.videoDetails.title, 'url': songInfo.videoDetails.video_url};
+	return {
+		artist : songInfo.videoDetails.author.name ,
+		title : songInfo.videoDetails.title,
+		album : songInfo.videoDetails.author.name ,
+		key : '0',
+		origin: 'Youtube',
+		url : songInfo.videoDetails.video_url
+	};
 }

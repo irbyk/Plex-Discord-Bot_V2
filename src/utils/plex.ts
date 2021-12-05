@@ -15,9 +15,6 @@ const extend = require('util')._extend;
 
 const PLEX_SERVER_PORT = 32400;
 
-
-
-
 export interface PlexAPIConfig {
 	hostname	: string;
 	port	: number;
@@ -310,6 +307,7 @@ export class PlexAPI {
 		return Promise.resolve(body);
 	};
 }
+
 function xmlToJSON(str: string, options: any) {
     return new Promise((resolve, reject) => {
         xml2js.parseString(str, options, (err: any, jsonObj: any) => {

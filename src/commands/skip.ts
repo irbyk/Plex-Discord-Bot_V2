@@ -1,9 +1,12 @@
+import { Client, EmbedField, Message, MessageEmbed } from "discord.js";
+import { Bot, trackToSong } from "../app/bot";
+
 module.exports = {
   name : 'skip',
   command : {
     usage: '?<int>',
     description: 'skips the current song if one is playing and plays the next song in queue if it exists',
-    process: function(bot, client, message, query) {
+    process: function(bot: Bot, client: Client, message: Message, query: string) {
       let nombreSkip = 1;
       if(query) {
           nombreSkip = parseInt(query, 10);
@@ -28,7 +31,7 @@ module.exports = {
           messageString += bot.language.SKIP_SUCESS.format({artist : bot.songQueue[0].artist, title : bot.songQueue[0].title});
         }
         message.channel.send(messageString);
-        bot.dispatcher.end();
+        bot.audioPlayer.stop();
       } else {
         message.reply(bot.language.SKIP_FAIL);
       }

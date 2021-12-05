@@ -1,9 +1,12 @@
+import { Client, EmbedField, Message, MessageEmbed } from "discord.js";
+import { Bot, trackToSong } from "../app/bot";
+
 module.exports = {
   name : 'restart',
   command : {
     usage: '',
     description: 'restart the plex bot.',
-    process: function(bot, client, message) {
+    process: function(bot: Bot, client: Client, message: Message) {
         bot.destroy();
         client.destroy();
         console.log('bot restart\n');
