@@ -14,4 +14,4 @@ COPY --from=build /home/PlexBot/ .
 
 COPY . .
 
-ENTRYPOINT ["/bin/sh", "node", "index.js"]
+cmd node index.js
