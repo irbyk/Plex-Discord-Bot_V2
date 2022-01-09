@@ -1,0 +1,33 @@
+name: Pull Request docker build
+
+on:
+  pull_request:
+    branches:
+      - master
+
+jobs:
+  docker_build:
+    name: Test docker build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the repo
+        uses: actions/checkout@v2
+      
+      - name: Extract metadata (tags, labels) for Docker
+        id: meta
+        uses: docker/metadata-action@v3
+        with:
+          images: irbyk/plexbot
+          flavor: |
+            latest=false
+          tags: |
+            type=ref,event=pr
+            pullrequest
+      
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v2
+        with:
+          context: .
+          push: false
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
