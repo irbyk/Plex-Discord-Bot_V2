@@ -30,7 +30,10 @@ jobs:
         uses: docker/metadata-action@v3
         with:
           images: irbyk/plexbot
-          tags: latest
+          flavor: |
+            latest=true
+          tags: |
+            type=ref,event=tag
       
       - name: Build and push Docker image
         uses: docker/build-push-action@v2
