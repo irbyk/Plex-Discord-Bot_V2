@@ -1,13 +1,9 @@
-# This workflow uses actions that are not certified by GitHub.
-# They are provided by a third-party and are governed by
-# separate terms of service, privacy policy, and support
-# documentation.
-
-name: Publish Docker image
+name: Pull Request docker build
 
 on:
-  release:
-    types: [published]
+  pull_request:
+    branches:
+      - master
 
 jobs:
   push_to_registry:
@@ -31,9 +27,10 @@ jobs:
         with:
           images: irbyk/plexbot
           flavor: |
-            latest=true
+            latest=false
           tags: |
-            type=ref,event=tag
+            type=ref,event=pr
+            pullrequest
       
       - name: Build and push Docker image
         uses: docker/build-push-action@v2
