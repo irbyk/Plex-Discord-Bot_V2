@@ -31,7 +31,7 @@ jobs:
             latest=false
           tags: |
             type=ref,event=pr
-            pullrequest
+            latest
       
       - name: Build and push Docker image
         uses: docker/build-push-action@v2
