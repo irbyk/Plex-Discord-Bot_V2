@@ -1,6 +1,6 @@
 {
 	"name": "plexbot",
-	"version": "2.4.0",
+	"version": "2.4.1",
 	"description": "a plex bot for discord",
 	"main": "index.js",
 	"scripts": {
@@ -18,8 +18,9 @@
 		"got": "^11.8.2",
 		"libsodium-wrappers": "^0.7.9",
 		"node-fetch": "^2",
+		"opusscript": "^0.0.8",
 		"plex-api": "^5.2.5",
 		"utf-8-validate": "^5.0.5",
-		"ytdl-core": "^4.9.1"
+		"ytdl-core": "^4.11.0"
 	}
 }
