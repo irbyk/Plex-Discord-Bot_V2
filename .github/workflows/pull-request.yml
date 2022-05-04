@@ -1,6 +1,7 @@
 name: Pull Request docker build
 
 on:
+  workflow_dispatch:
   pull_request:
     branches:
       - master
