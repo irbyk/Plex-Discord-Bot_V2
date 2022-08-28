@@ -1,6 +1,6 @@
 {
 	"name": "plexbot",
-	"version": "2.4.1",
+	"version": "2.4.2",
 	"description": "a plex bot for discord",
 	"main": "index.js",
 	"scripts": {
@@ -14,13 +14,13 @@
 		"bufferutil": "^4.0.3",
 		"discord.js": "^12.5.3",
 		"erlpack": "^0.1.3",
-		"ffmpeg-static": "^4.4.0",
+		"ffmpeg-static": "^4.4.1",
 		"got": "^11.8.2",
 		"libsodium-wrappers": "^0.7.9",
 		"node-fetch": "^2",
 		"opusscript": "^0.0.8",
 		"plex-api": "^5.2.5",
 		"utf-8-validate": "^5.0.5",
-		"ytdl-core": "^4.11.0"
+		"ytdl-core": "^4.11.1"
 	}
 }
