@@ -246,6 +246,9 @@ class Bot extends EventEmitter{
 	 */
 	async findPlaylist(query, message, random) {
 		const res = await this.findTracksOnPlex(query, 0, 10, 15);
+		if(res.MediaContainer.Metadata === undefined) {
+			throw new Error("Playlist not find");
+		}
 		const key = res.MediaContainer.Metadata[0].key;
 		const url = PLEX_PLAY_START + key + PLEX_PLAY_END;
 		this.loadPlaylist(url, message, random);

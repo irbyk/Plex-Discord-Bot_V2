@@ -11,7 +11,10 @@ module.exports = {
     usage : '<playlist on plex> -r',
     description : 'play one playlist that you can find on plex.\nThe \'-r\' option is to play the playlist randomly.',
     process : async function(bot, client, message, args) {
-      
+      if (args.length == 0) {
+        message.reply("You must provide a name for the playlist.");
+        return ;
+      }
       let random = false;
       let slice = args.slice(1);
       if (args.length >= 2){
@@ -20,11 +23,16 @@ module.exports = {
           slice = args.slice(1, args.length - 1);
         }
       }
+      
       let playlistName = args[0];
       slice.forEach(function(iter){
         playlistName = playlistName + ' ' + iter;
       });
-      bot.findPlaylist(playlistName, message, random);
+      try {
+        await bot.findPlaylist(playlistName, message, random);
+      } catch (err){
+        message.reply(`The playlist "${playlistName}" was not found on plex.`);
+      }
     }
   }
 };
