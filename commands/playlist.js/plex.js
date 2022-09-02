@@ -31,6 +31,7 @@ module.exports = {
       try {
         await bot.findPlaylist(playlistName, message, random);
       } catch (err){
+        console.error(err);
         message.reply(`The playlist "${playlistName}" was not found on plex.`);
       }
     }

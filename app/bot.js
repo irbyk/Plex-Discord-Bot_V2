@@ -245,26 +245,39 @@ class Bot extends EventEmitter{
 	 *
 	 */
 	async findPlaylist(query, message, random) {
-		const res = await this.findTracksOnPlex(query, 0, 10, 15);
+		const queryHTTP = encodeURI(query);
+		const res = await this.plex.query('/playlists?playlistType=audio' + '&query=' + queryHTTP + '&X-Plex-Container-Start=' + 0 + '&X-Plex-Container-Size=' + 100);
+
 		if(res.MediaContainer.Metadata === undefined) {
 			throw new Error("Playlist not find");
 		}
-		const key = res.MediaContainer.Metadata[0].key;
-		const url = PLEX_PLAY_START + key + PLEX_PLAY_END;
-		this.loadPlaylist(url, message, random);
+		for (const entry of res.MediaContainer.Metadata) {
+			if (entry.title.includes(query)) {
+				
+				const url = PLEX_PLAY_START + entry.key + PLEX_PLAY_END;
+				this.loadPlaylist(url, message, random);
+				message.reply(`The playlist "${query}" has been loaded.`);
+				return ;
+			}
+		}
+		
+		
 	}
 
 	/**
 	 *
 	 */
 	async loadPlaylist(url, message, random=false) {
+
 		request(url, (err, res, body) => {
 			xml2json.parseString(body.toString('utf8'), {}, (err, jsonObj) => {
+
 				const tracks = jsonObj.MediaContainer.Track;
 				const resultSize = jsonObj.MediaContainer.$.size;
 
 				for (let i = 0; i < resultSize;i++) {
 					const track = tracks[i].$
+
 					const key = tracks[i].Media[0].Part[0].$.key;
 					const title = track.title;
 					let artist = '';
@@ -414,8 +427,17 @@ class Bot extends EventEmitter{
 	 */
 	async playSong(message) {
 		
-		if (this.voiceChannel == null)
+		if (this.voiceChannel == null) {
+			if(message.member == null) {
+				message.channel.send("The bot cannot see who send the message, and therefor cannot connect to the voice channel.");
+				return ;
+			}
+			if(message.member.voice == null) {
+				message.channel.send("You are not connected to a voice channel, or the bot cannot see the voice channel.");
+				return ;
+			}
 			this.voiceChannel = message.member.voice.channel;
+		}
 
 		if (this.voiceChannel) {
 			this.emit('will play', message);
@@ -467,7 +489,7 @@ class Bot extends EventEmitter{
 							let embedObj = this.songToEmbedObject(this.songQueue[0]);
 							message.channel.send(language.BOT_PLAYSONG_SUCCES, embedObj);
 						}
-				}).on('error', (err) => console.log(err));
+				}).on('error', (err) => console.error(err));
 				this.dispatcher.setVolume(this.volume);
 			}
 		} else {
