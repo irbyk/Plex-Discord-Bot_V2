@@ -36,7 +36,7 @@ module.exports = {
             }
 
             files.forEach(function (file) {
-                embedObj.fields[0].value = embedObj.embed.fields[0].value + file.slice(0, -'.playlist'.length) + '\n';
+                embedObj.fields[0].value = embedObj.fields[0].value + file.slice(0, -'.playlist'.length) + '\n';
             });
             message.channel.send({ content: '\n**' + bot.language.PLAYLIST + ' :**\n\n', embeds: [embedObj] });
         });

@@ -17,9 +17,9 @@ module.exports = {
             const res = await bot.findTracksOnPlex(query.slice(args[0].length+1), 0, 20);
             for (let track of res.MediaContainer.Metadata) {
                 const music = bot.trackToMusic(track);
-                embedObj.embed.fields[0].value += music.title + '\n\n';
-                embedObj.embed.fields[1].value += music.artist + '\n\n';
-                embedObj.embed.fields[2].value += music.album + '\n\n';
+                embedObj.fields[0].value += music.title + '\n\n';
+                embedObj.fields[1].value += music.artist + '\n\n';
+                embedObj.fields[2].value += music.album + '\n\n';
             }
         };break;
         case 'reset': offset = 0;
@@ -30,9 +30,9 @@ module.exports = {
               offset += res.MediaContainer.Metadata.length < pageSize ? 0: pageSize;
               for (let track of res.MediaContainer.Metadata) {
                   const music = bot.trackToMusic(track);
-                  embedObj.embed.fields[0].value += music.title + '\n\n';
-                  embedObj.embed.fields[1].value += music.artist + '\n\n';
-                  embedObj.embed.fields[2].value += music.album + '\n\n';
+                  embedObj.fields[0].value += music.title + '\n\n';
+                  embedObj.fields[1].value += music.artist + '\n\n';
+                  embedObj.fields[2].value += music.album + '\n\n';
               }
             } catch (err) {
                 console.error(err);

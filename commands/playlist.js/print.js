@@ -57,7 +57,7 @@ module.exports = {
                         embedObj.fields[0].value = '';
                         premier = false;
                       }
-                      embedObj.fields[0].value = embedObj.embed.fields[0].value + ligne;
+                      embedObj.fields[0].value = embedObj.fields[0].value + ligne;
                   });
                   embedObj.footer.text = bot.language.PLAYLIST_PRINT_SUCCES.format({number : indice, plurial : (indice > 1 ? 's' : '')});
                   await message.channel.send({ content: '\n**' + args[0] + (!premier ? '(' + bot.language.NEXT +')' : '')+ ' :**\n\n', embeds: [embedObj] });
