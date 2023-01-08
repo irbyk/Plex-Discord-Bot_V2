@@ -9,11 +9,24 @@ const xml2json = require('xml2js');
 const request = require('request');
 const fetch = require('node-fetch');
 const { Readable } = require('stream');
+const {
+	NoSubscriberBehavior,
+	StreamType,
+	createAudioPlayer,
+	createAudioResource,
+	entersState,
+	AudioPlayerStatus,
+	VoiceConnectionStatus,
+	joinVoiceChannel
+} = require('@discordjs/voice');
 const language = require('../'+config.language);
 // plex constants ------------------------------------------------------------
 const plexConfig = require('../config/plex');
+const { channel } = require('diagnostics_channel');
 const PLEX_PLAY_START = (plexConfig.https ? 'https://' : 'http://') + plexConfig.hostname + ':' + plexConfig.port;
 const PLEX_PLAY_END = '?X-Plex-Token=' + plexConfig.token;
+
+const maxTransmissionGap = 5000;
 
 function getRandomNumber(max) {
 	return Math.floor(Math.random() * Math.floor(max));
@@ -422,6 +435,10 @@ class Bot extends EventEmitter{
 		}
 	}
 
+	stop() {
+		this.conn.disconnect();
+		this.dispatcher.stop();
+	}
 	/**
 	 *
 	 */
@@ -438,16 +455,31 @@ class Bot extends EventEmitter{
 			}
 			this.voiceChannel = message.member.voice.channel;
 		}
-
 		if (this.voiceChannel) {
 			this.emit('will play', message);
+			console.log(this.workingTask);
 			if(this.workingTask > 0){
 				this.isPlaying = true;
 				this.waitForStart = true;
 				this.waitForStartMessage = message;
 			} else {
-				const connection = await this.voiceChannel.join();
-				this.conn = connection;
+				//const connection = await this.voiceChannel.join();
+				const connection = await joinVoiceChannel({
+					channelId: this.voiceChannel.id,
+					guildId: this.voiceChannel.guild.id,
+					adapterCreator: this.voiceChannel.guild.voiceAdapterCreator
+				})
+
+
+				try {
+					await entersState(connection, VoiceConnectionStatus.Ready, 30_000);
+					this.conn = connection;
+				} catch (error) {
+					connection.destroy();
+					throw error;
+				}
+
+
 				
 				let readstream;
 				if(this.songQueue[0].key) {
@@ -484,13 +516,38 @@ class Bot extends EventEmitter{
 					}
 				};
 				// 20 971 520 bits = 20Mb
-				this.dispatcher = connection.play(readstream).on('finish', dispatcherFunc).on('start', () => {
+
+				this.dispatcher = createAudioPlayer({
+					behaviors: {
+						noSubscriber: NoSubscriberBehavior.Stop,
+						maxMissedFrames: Math.round(maxTransmissionGap / 20),
+					},
+				});
+				this.dispatcher.on(AudioPlayerStatus.Idle, () => {
+					readstream.destroy();
+					dispatcherFunc()
+				})
+				this.dispatcher.on(AudioPlayerStatus.Playing, () => {
+					if(!this.songQueue[0].played) {
+						let embedObj = this.songToEmbedObject(this.songQueue[0]);
+						message.channel.send({ content: language.BOT_PLAYSONG_SUCCES, embeds: [embedObj] });
+					}
+				});
+				readstream.on('finish', dispatcherFunc)
+				readstream.on('error', (err) => console.error(err));
+				/*
+				.on('start', () => {
 						if(!this.songQueue[0].played) {
 							let embedObj = this.songToEmbedObject(this.songQueue[0]);
-							message.channel.send(language.BOT_PLAYSONG_SUCCES, embedObj);
+							message.channel.send({ content: language.BOT_PLAYSONG_SUCCES, embeds: [embedObj] });
 						}
-				}).on('error', (err) => console.error(err));
-				this.dispatcher.setVolume(this.volume);
+					})
+				*/
+				this.dispatcher.play(createAudioResource(readstream), {
+					inputType: StreamType.OggOpus,
+				})
+				this.conn.subscribe(this.dispatcher);
+				
 			}
 		} else {
 				message.reply(language.BOT_PLAYSONG_FAIL)
@@ -501,8 +558,8 @@ class Bot extends EventEmitter{
 	 *
 	 */
 	songToEmbedObject(song) {
-		const embedObj = {
-			embed: {
+		const embedObj = 
+			{
 				color: 4251856,
 				fields:
 				[
@@ -520,8 +577,7 @@ class Bot extends EventEmitter{
 				footer: {
 					text: language.NUMBER_MUSIC_IN_QUEUE.format({number : this.songQueue.length, plurial : (this.songQueue.length > 1 ? 's' : '')})
 				},
-			}
-		};
+			};
 		return embedObj;
 	}
 
@@ -534,7 +590,7 @@ class Bot extends EventEmitter{
 					await this.conn.disconnect();
 			}
 			if(this.voiceChannel) {
-					await this.voiceChannel.leave();
+					//await this.voiceChannel.leave();
 					this.voiceChannel = null;
 			}
 		}

@@ -6,7 +6,14 @@ var keys = require('./config/keys.js');
 
 // discord client --------------------------------------------------------------
 
-const client = new Client({ intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES] });
+const client = new Client({
+	intents: [
+		Intents.FLAGS.GUILDS,
+		Intents.FLAGS.GUILD_MESSAGES,
+		Intents.FLAGS.GUILD_VOICE_STATES,
+		Intents.FLAGS.MESSAGE_CONTENT,
+	]
+});
 const bot = new Bot(client);
 // bot functions ---------------------------------------------------------------
 require('./app/music.js')(client, bot);

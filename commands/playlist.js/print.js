@@ -19,7 +19,6 @@ module.exports = {
             message.reply(bot.language.PLAYLIST_UNKNOW);
         } else {
           let embedObj = {
-              embed: {
                   color: 4251856,
                   fields: [
                       {
@@ -31,7 +30,6 @@ module.exports = {
                   footer: {
                       text: ''
                   },
-              }
           };
           fs.readFile(nomFichier, 'utf8', async function readFileCallback(err, data){
                   if (err){
@@ -40,7 +38,7 @@ module.exports = {
                   }
                   let playlist = JSON.parse(data);
                   if(playlist.musiques.length > 1) {
-                    embedObj.embed.fields[0].name += 's';
+                    embedObj.fields[0].name += 's';
                   }
                   
                   let indice = 0;
@@ -54,15 +52,15 @@ module.exports = {
                   playlist.musiques.forEach(function (musique){
                       indice++;
                       let ligne = bot.language.PLAYLIST_PRINT_INFO.format({index : indice, title : musique.titre, artist : musique.artiste}) + '\n';
-                      if (embedObj.embed.fields[0].value.length + ligne.length > 1024) {
-                        message.channel.send('\n**' + args[0] + (!premier ? '(' + bot.language.NEXT +')' : '') + ' :**\n\n', Object.assign({}, embedObj));
-                        embedObj.embed.fields[0].value = '';
+                      if (embedObj.fields[0].value.length + ligne.length > 1024) {
+                        message.channel.send({ content: '\n**' + args[0] + (!premier ? '(' + bot.language.NEXT +')' : '') + ' :**\n\n', embeds: [Object.assign({}, embedObj)] });
+                        embedObj.fields[0].value = '';
                         premier = false;
                       }
-                      embedObj.embed.fields[0].value = embedObj.embed.fields[0].value + ligne;
+                      embedObj.fields[0].value = embedObj.embed.fields[0].value + ligne;
                   });
-                  embedObj.embed.footer.text = bot.language.PLAYLIST_PRINT_SUCCES.format({number : indice, plurial : (indice > 1 ? 's' : '')});
-                  await message.channel.send('\n**' + args[0] + (!premier ? '(' + bot.language.NEXT +')' : '')+ ' :**\n\n', embedObj);
+                  embedObj.footer.text = bot.language.PLAYLIST_PRINT_SUCCES.format({number : indice, plurial : (indice > 1 ? 's' : '')});
+                  await message.channel.send({ content: '\n**' + args[0] + (!premier ? '(' + bot.language.NEXT +')' : '')+ ' :**\n\n', embeds: [embedObj] });
                   
           });
       }

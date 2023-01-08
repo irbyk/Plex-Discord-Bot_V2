@@ -14,12 +14,10 @@ module.exports = {
           console.error(`Dispatcher : ${err}`);
         });
         var embedObj = {
-          embed: {
             color: 16424969,
             description: bot.language.PAUSE_INFO,
-          }
         };
-        message.channel.send(bot.language.PAUSE_SUCCES, embedObj);
+        message.channel.send({ content: bot.language.PAUSE_SUCCES, embeds: [embedObj] });
       }
       else {
         message.reply(bot.language.PAUSE_FAIL);

@@ -40,14 +40,13 @@ module.exports = {
           }
       }
       sanitizeEmbedObj(embedObj);
-      message.channel.send(embedObj);
+      message.channel.send({embeds: [embedObj]});
     }
   }
 };
 
 function createEmbedObj() {
   return {
-    embed: {
       color: 0x00ff00,
       description: 'List of song : ',
       fields: [
@@ -67,14 +66,13 @@ function createEmbedObj() {
       footer: {
         text: '\u2800'.repeat(100)+"|"
       }
-    }
   };
 }
 
 function sanitizeEmbedObj(embedObj) {
-  for(let i = 0; i < embedObj.embed.fields.length; i++ ) {
-    if(embedObj.embed.fields[i].value == '') {
-      embedObj.embed.fields[i].value = '*None*';
+  for(let i = 0; i < embedObj.fields.length; i++ ) {
+    if(embedObj.fields[i].value == '') {
+      embedObj.fields[i].value = '*None*';
     }
   }
 }

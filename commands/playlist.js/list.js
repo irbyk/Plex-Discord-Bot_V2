@@ -17,7 +17,6 @@ module.exports = {
                 throw err
             }
             let embedObj = {
-                embed: {
                     color: 4251856,
                     fields: [
                         {
@@ -29,7 +28,6 @@ module.exports = {
                     footer: {
                         text: ''
                     },
-                }
             };
 
             if (files.length == 0){
@@ -38,9 +36,9 @@ module.exports = {
             }
 
             files.forEach(function (file) {
-                embedObj.embed.fields[0].value = embedObj.embed.fields[0].value + file.slice(0, -'.playlist'.length) + '\n';
+                embedObj.fields[0].value = embedObj.embed.fields[0].value + file.slice(0, -'.playlist'.length) + '\n';
             });
-            message.channel.send('\n**' + bot.language.PLAYLIST + ' :**\n\n', embedObj);
+            message.channel.send({ content: '\n**' + bot.language.PLAYLIST + ' :**\n\n', embeds: [embedObj] });
         });
     }
   }

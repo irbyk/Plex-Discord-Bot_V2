@@ -26,7 +26,7 @@ module.exports = {
           };
           ulala();
         } else {
-          await bot.dispatcher.end();
+          await bot.stop();
 		  bot.isPlaying = false;
           if(bot.songQueue.length > 0 ) {
             bot.playSong(message);

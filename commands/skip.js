@@ -28,7 +28,7 @@ module.exports = {
           messageString += bot.language.SKIP_SUCESS.format({artist : bot.songQueue[0].artist, title : bot.songQueue[0].title});
         }
         message.channel.send(messageString);
-        bot.dispatcher.end();
+        bot.stop();
       } else {
         message.reply(bot.language.SKIP_FAIL);
       }

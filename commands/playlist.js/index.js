@@ -17,7 +17,6 @@ module.exports = {
         if(query == "?") {
             for (let command in commandesPlaylist){
                 let embedObj = {
-                        embed: {
                             color: 4251856,
                             fields:
                             [
@@ -35,9 +34,8 @@ module.exports = {
                             footer: {
                                 text: ''
                             },
-                        }
                 };
-                message.channel.send('\n**' + command + ' :**\n\n', embedObj);
+                message.channel.send({ content: '\n**' + command + ' :**\n\n', embeds: [embedObj] });
             }
             return ;
         }
