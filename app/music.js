@@ -10,7 +10,7 @@ module.exports = function(client, bot) {
   });
 
   // when message is sent to discord
-  client.on('message', function(message){
+  client.on('messageCreate', function(message){
     
       var msg = message.content;//.toLowerCase();
       
