@@ -265,11 +265,11 @@ class Bot extends EventEmitter{
 			throw new Error("Playlist not find");
 		}
 		for (const entry of res.MediaContainer.Metadata) {
-			if (entry.title.includes(query)) {
+			if (entry.title.toLowerCase().includes(query.toLowerCase())) {
 				
 				const url = PLEX_PLAY_START + entry.key + PLEX_PLAY_END;
 				this.loadPlaylist(url, message, random);
-				message.reply(`The playlist "${query}" has been loaded.`);
+				message.reply(`The playlist "${entry.title}" has been loaded.`);
 				return ;
 			}
 		}
@@ -457,7 +457,6 @@ class Bot extends EventEmitter{
 		}
 		if (this.voiceChannel) {
 			this.emit('will play', message);
-			console.log(this.workingTask);
 			if(this.workingTask > 0){
 				this.isPlaying = true;
 				this.waitForStart = true;
