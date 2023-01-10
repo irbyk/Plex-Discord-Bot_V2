@@ -582,16 +582,18 @@ class Bot extends EventEmitter{
 						value: song.artist,
 						inline: true
 					},
-					{
-						name: language.ALBUM,
-						value: song.album ?? '',
-						inline: true
-					}
 				],
 				footer: {
 					text: language.NUMBER_MUSIC_IN_QUEUE.format({number : this.songQueue.length, plurial : (this.songQueue.length > 1 ? 's' : '')})
 				},
 			};
+		if (song.album) {
+			embedObj.fields.push(					{
+				name: language.ALBUM,
+				value: song.album,
+				inline: true
+			})
+		}
 		return embedObj;
 	}
 
