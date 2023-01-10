@@ -11,7 +11,7 @@ module.exports = {
         await bot.loadLibrary();
       }
       const args = query.split(/\s+/);
-      const embedObj = createEmbedObj();
+      const embedObj = createEmbedObj(bot);
       switch(args[0]) {
         case 'search': {
             const res = await bot.findTracksOnPlex(query.slice(args[0].length+1), 0, 20);
@@ -45,21 +45,21 @@ module.exports = {
   }
 };
 
-function createEmbedObj() {
+function createEmbedObj(bot) {
   return {
       color: 0x00ff00,
       description: 'List of song : ',
       fields: [
         {
-          name: 'Title',
+          name: bot.language.TITLE,
           value: '',
           inline: true
         }, {
-          name: 'Artist',
+          name: bot.language.ARTIST,
           value: '',
           inline: true
         }, {
-          name: 'Album',
+          name: bot.language.ALBUM,
           value: '',
           inline: true
         }],

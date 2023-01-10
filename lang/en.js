@@ -3,6 +3,7 @@ require(__dirname+'/format.js');
 module.exports = {
   ARTIST : 'Artist',
   TITLE : 'Title',
+  ALBUM: 'Album',
   COMMAND : 'Command',
   DESCRIPTION : 'Description',
   NAME : 'Name',

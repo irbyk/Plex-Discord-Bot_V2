@@ -569,13 +569,18 @@ class Bot extends EventEmitter{
 				fields:
 				[
 					{
+						name: language.TITLE,
+						value: song.title,
+						inline: true
+					},
+					{
 						name: language.ARTIST,
 						value: song.artist,
 						inline: true
 					},
 					{
-						name: language.TITLE,
-						value: song.title,
+						name: language.ALBUM,
+						value: song.album,
 						inline: true
 					}
 				],
