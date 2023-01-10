@@ -259,7 +259,7 @@ class Bot extends EventEmitter{
 	 */
 	async findPlaylist(query, message, random) {
 		const queryHTTP = encodeURI(query);
-		const res = await this.plex.query('/playlists?playlistType=audio' + '&query=' + queryHTTP + '&X-Plex-Container-Start=' + 0 + '&X-Plex-Container-Size=' + 100);
+		const res = await this.plex.query('/playlists?playlistType=audio' + '&title=' + queryHTTP + '&X-Plex-Container-Start=' + 0 + '&X-Plex-Container-Size=' + 100);
 
 		if(res.MediaContainer.Metadata === undefined || res.MediaContainer.Metadata.length === 0) {
 			throw new Error("Playlist not find");
