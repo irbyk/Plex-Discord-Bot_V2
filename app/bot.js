@@ -300,7 +300,7 @@ class Bot extends EventEmitter{
 					const key = tracks[i].Media[0].Part[0].$.key;
 					
 					const title = track.title;
-					const albumn = track.parentTitle;
+					const album = track.parentTitle;
 					let artist = '';
 					if ('originalTitle' in track) {
 						artist = track.originalTitle;
@@ -308,7 +308,7 @@ class Bot extends EventEmitter{
 					else {
 						artist = track.grandparentTitle;
 					}
-					this.songQueue.push({'artist' : artist, 'title': title, 'albumn': albumn, 'key': key});
+					this.songQueue.push({'artist' : artist, 'title': title, 'album': album, 'key': key});
 				}
 
 				if (random) {
@@ -359,7 +359,7 @@ class Bot extends EventEmitter{
 					const track = tracks[i].$
 					const key = tracks[i].Media[0].Part[0].$.key;
 					const title = track.title;
-					const albumn = track.parentTitle;
+					const album = track.parentTitle;
 					let artist = '';
 					if ('originalTitle' in track) {
 						artist = track.originalTitle;
@@ -367,7 +367,7 @@ class Bot extends EventEmitter{
 					else {
 						artist = track.grandparentTitle;
 					}
-					this.songQueue.push({'artist' : artist, 'title': title, 'albumn': albumn, 'key': key});
+					this.songQueue.push({'artist' : artist, 'title': title, 'album': album, 'key': key});
 				}
 				if(!this.isPlaying) {
 					this.playSong(message);
@@ -424,7 +424,7 @@ class Bot extends EventEmitter{
 			let key = tracks[songNumber].Media[0].Part[0].key;
 			let artist = '';
 			let title = tracks[songNumber].title;
-			const albumn = track[songnumber].parentTitle;
+			const album = track[songnumber].parentTitle;
 			if ('originalTitle' in tracks[songNumber]) {
 				artist = tracks[songNumber].originalTitle;
 			}
@@ -432,7 +432,7 @@ class Bot extends EventEmitter{
 				artist = tracks[songNumber].grandparentTitle;
 			}
 
-			this.songQueue.push({'artist' : artist, 'title': title, 'albumn': albumn, 'key': key});
+			this.songQueue.push({'artist' : artist, 'title': title, 'album': album, 'key': key});
 			if (!this.isPlaying) {
 				this.playSong(message)
 			} else {
