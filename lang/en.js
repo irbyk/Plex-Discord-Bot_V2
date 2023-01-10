@@ -9,6 +9,7 @@ module.exports = {
   PLAYLIST : 'Playlist',
   NEXT : 'next',
   MUSIC : 'Music',
+  SONGS: 'Songs',
   ALBUM_NOT_FOUND : '**The album "{albumName}" was not found.**',
   ERROR_NOT_ENOUGHT_ARG : 'not enough arguments.',
   ERROR_TOO_MANY_ARGS : 'too many arguments.',

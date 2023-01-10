@@ -6,7 +6,7 @@ function getRandomInt(max) {
 };
 
 module.exports = {
-  name : 'plex',
+  name : 'plex-play',
   command : {
     usage : '<playlist on plex> -r',
     description : 'play one playlist that you can find on plex.\nThe \'-r\' option is to play the playlist randomly.',

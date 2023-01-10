@@ -254,9 +254,15 @@ class Bot extends EventEmitter{
 		return this.trackToMusic(liste[0]);
 	};
 
-	/**
-	 *
-	 */
+	async listPlaylist(message) {
+		const res = await this.plex.query('/playlists?playlistType=audio' + '&X-Plex-Container-Start=' + 0 + '&X-Plex-Container-Size=' + 100);
+		if(res.MediaContainer.Metadata === undefined || res.MediaContainer.Metadata.length === 0) {
+			throw new Error("Playlist not find");
+		}
+
+		return res.MediaContainer.Metadata;
+	}
+
 	async findPlaylist(query, message, random) {
 		const queryHTTP = encodeURI(query);
 		const res = await this.plex.query('/playlists?playlistType=audio' + '&title=' + queryHTTP + '&X-Plex-Container-Start=' + 0 + '&X-Plex-Container-Size=' + 100);
