@@ -1,6 +1,6 @@
 function newEmbedObjList(isEmpty = false){
     return {
-            embed: {
+            
               color: 2389639,
               description: 'List of existing libraries : ',
               fields: [
@@ -17,14 +17,14 @@ function newEmbedObjList(isEmpty = false){
                     value: isEmpty ? '*None*' : '',
                     inline: true
                   }]
-            }
+            
           };
 }
 
 
 function newEmbedObjListLoaded(isEmpty = false){
     return {
-      embed: {
+      
         color: 2389639,
         description: 'List of loaded libraries : ',
         fields: [
@@ -41,22 +41,22 @@ function newEmbedObjListLoaded(isEmpty = false){
             value: isEmpty ? '*None*' : '',
             inline: true
           }]
-      }
+      
     };
 }
 
 const LIMIT_CARACTER_EMBED_FIELD = 1024;
 function addNewElement(message, embedObj, elementToAdd, functionNewEmbedObj) {
     if (
-      (embedObj.embed.fields[0].value + elementToAdd[0]).length > LIMIT_CARACTER_EMBED_FIELD ||
-      (embedObj.embed.fields[1].value + elementToAdd[1]).length > LIMIT_CARACTER_EMBED_FIELD ||
-      (embedObj.embed.fields[2].value + elementToAdd[2]).length > LIMIT_CARACTER_EMBED_FIELD) {
-      message.channel.send(embedObj);
+      (embedObj.fields[0].value + elementToAdd[0]).length > LIMIT_CARACTER_EMBED_FIELD ||
+      (embedObj.fields[1].value + elementToAdd[1]).length > LIMIT_CARACTER_EMBED_FIELD ||
+      (embedObj.fields[2].value + elementToAdd[2]).length > LIMIT_CARACTER_EMBED_FIELD) {
+      message.channel.send({ embeds: [embedObj] });
       embedObj = functionNewEmbedObj(false);
     }
-    embedObj.embed.fields[0].value += elementToAdd[0];
-    embedObj.embed.fields[1].value += elementToAdd[1];
-    embedObj.embed.fields[2].value += elementToAdd[2];
+    embedObj.fields[0].value += elementToAdd[0];
+    embedObj.fields[1].value += elementToAdd[1];
+    embedObj.fields[2].value += elementToAdd[2];
     return embedObj;
 }
 
@@ -97,24 +97,22 @@ module.exports = {
           let list = await bot.getLibrariesList();
           let embedObj = newEmbedObjList(list.length == 0);
           embedObj = fileEmbedObj(message, list, embedObj, newEmbedObjList)
-          message.channel.send(embedObj);
+          message.channel.send({ embeds: [embedObj] });
           if(Object.keys(bot.cache_library).length > 0) {
             embedObj = newEmbedObjListLoaded(false);
             embedObj = fileEmbedObj(message, Object.values(bot.cache_library), embedObj, newEmbedObjListLoaded);
           } else {
             embedObj = {
-              embed: {
                 color: 0xff0000,
                 description: 'No loaded library. Type `' + bot.config.caracteres_commande + 'library add` to add all the libraries.\n Type `'
                 + bot.config.caracteres_commande + 'library add <key>` to only add the library with the given key.' ,
-              }
             };
           }
-          message.channel.send(embedObj);
+          message.channel.send({ embeds: [embedObj] });
         }; break;
         case 'add': {
-          let handler = (library => {message.channel.send({embed: {color:0x0000ff, description:'The "' + library.name + '" library has been loaded.'}})});
-          let handlerError = (error => {message.channel.send({embed: {color:0xff0000, description:'"' + error.key + '" is not a valide library\'s key.'}})});
+          let handler = (library => {message.channel.send({embeds: [{color:0x0000ff, description:'The "' + library.name + '" library has been loaded.'}]})});
+          let handlerError = (error => {message.channel.send({embeds: [{color:0xff0000, description:'"' + error.key + '" is not a valide library\'s key.'}]})});
           bot.on('libraryAdded', handler);
           bot.on('loadLibraryError', handlerError);
           
@@ -136,7 +134,7 @@ module.exports = {
             if(isNaN(id)) {
               message.reply(args[1] + ' is not a valid library key.');
             } else {
-              bot.once('libraryRemoved', (library => {message.channel.send({embed: {color:0x0000ff, description:'The "' + library.name + '" library has been removed.'}})}));
+              bot.once('libraryRemoved', (library => {message.channel.send({embeds: [{color:0x0000ff, description:'The "' + library.name + '" library has been removed.'}]})}));
               bot.removeLibrary(id);
             }
         }; break;

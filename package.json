@@ -10,9 +10,10 @@
 	"author": "danxfisher, irbyk",
 	"license": "ISC",
 	"dependencies": {
-		"@discordjs/opus": "^0.8.0",
+		"@discordjs/opus": "^0.9.0",
+		"@discordjs/voice": "^0.14.0",
 		"bufferutil": "^4.0.3",
-		"discord.js": "^12.5.3",
+		"discord.js": "^13.12.0",
 		"erlpack": "^0.1.3",
 		"ffmpeg-static": "^4.4.1",
 		"got": "^12.5.3",

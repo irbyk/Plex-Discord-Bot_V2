@@ -1,4 +1,4 @@
-FROM node:12 as build
+FROM node:16 as build
 
 WORKDIR /home/PlexBot/
 
@@ -6,7 +6,7 @@ COPY package*.json ./
 
 RUN npm install
 
-FROM node:12-slim as final
+FROM node:16-slim as final
 
 WORKDIR /home/PlexBot/
 

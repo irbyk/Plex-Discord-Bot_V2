@@ -11,15 +11,15 @@ module.exports = {
         await bot.loadLibrary();
       }
       const args = query.split(/\s+/);
-      const embedObj = createEmbedObj();
+      const embedObj = createEmbedObj(bot);
       switch(args[0]) {
         case 'search': {
             const res = await bot.findTracksOnPlex(query.slice(args[0].length+1), 0, 20);
             for (let track of res.MediaContainer.Metadata) {
                 const music = bot.trackToMusic(track);
-                embedObj.embed.fields[0].value += music.title + '\n\n';
-                embedObj.embed.fields[1].value += music.artist + '\n\n';
-                embedObj.embed.fields[2].value += music.album + '\n\n';
+                embedObj.fields[0].value += music.title + '\n\n';
+                embedObj.fields[1].value += music.artist + '\n\n';
+                embedObj.fields[2].value += music.album + '\n\n';
             }
         };break;
         case 'reset': offset = 0;
@@ -30,9 +30,9 @@ module.exports = {
               offset += res.MediaContainer.Metadata.length < pageSize ? 0: pageSize;
               for (let track of res.MediaContainer.Metadata) {
                   const music = bot.trackToMusic(track);
-                  embedObj.embed.fields[0].value += music.title + '\n\n';
-                  embedObj.embed.fields[1].value += music.artist + '\n\n';
-                  embedObj.embed.fields[2].value += music.album + '\n\n';
+                  embedObj.fields[0].value += music.title + '\n\n';
+                  embedObj.fields[1].value += music.artist + '\n\n';
+                  embedObj.fields[2].value += music.album + '\n\n';
               }
             } catch (err) {
                 console.error(err);
@@ -40,41 +40,39 @@ module.exports = {
           }
       }
       sanitizeEmbedObj(embedObj);
-      message.channel.send(embedObj);
+      message.channel.send({embeds: [embedObj]});
     }
   }
 };
 
-function createEmbedObj() {
+function createEmbedObj(bot) {
   return {
-    embed: {
       color: 0x00ff00,
       description: 'List of song : ',
       fields: [
         {
-          name: 'Title',
+          name: bot.language.TITLE,
           value: '',
           inline: true
         }, {
-          name: 'Artist',
+          name: bot.language.ARTIST,
           value: '',
           inline: true
         }, {
-          name: 'Album',
+          name: bot.language.ALBUM,
           value: '',
           inline: true
         }],
       footer: {
         text: '\u2800'.repeat(100)+"|"
       }
-    }
   };
 }
 
 function sanitizeEmbedObj(embedObj) {
-  for(let i = 0; i < embedObj.embed.fields.length; i++ ) {
-    if(embedObj.embed.fields[i].value == '') {
-      embedObj.embed.fields[i].value = '*None*';
+  for(let i = 0; i < embedObj.fields.length; i++ ) {
+    if(embedObj.fields[i].value == '') {
+      embedObj.fields[i].value = '*None*';
     }
   }
 }

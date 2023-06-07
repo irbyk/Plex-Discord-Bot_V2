@@ -10,10 +10,10 @@ module.exports = function(client, bot) {
   });
 
   // when message is sent to discord
-  client.on('message', function(message){
+  client.on('messageCreate', function(message){
     
       var msg = message.content;//.toLowerCase();
-      
+
       if (msg.startsWith(bot.config.caracteres_commande)){
         if(bot.config.canal_ecoute == '' || message.channel.name == bot.config.canal_ecoute) {
             var cmdTxt = msg.split(/\s+/)[0].substring(bot.config.caracteres_commande.length, msg.length).toLowerCase();
@@ -31,7 +31,7 @@ module.exports = function(client, bot) {
               }
               for (let command in plexCommands){
                   let embedObj = {
-                          embed: {
+                           
                               color: 4251856,
                               fields:
                               [
@@ -49,9 +49,9 @@ module.exports = function(client, bot) {
                               footer: {
                                   text: ''
                               },
-                          }
+                          
                   };
-                  message.channel.send('\n**' + command + ' :**\n\n', embedObj);
+                  message.channel.send({ content: '\n**' + command + ' :**\n\n', embeds: [embedObj] });
               }
               return ;
             }
