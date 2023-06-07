@@ -2,6 +2,8 @@ Note : this is a personal upgrade of the Plex Discord bot made by danxfisher ava
 He should have all the credit for starting this project.
 # Plex Discord Bot
 
+You need Node.js v16
+
 ## Installation
 1. Clone the repo or download a zip and unpackage it.
 
