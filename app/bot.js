@@ -424,7 +424,7 @@ class Bot extends EventEmitter{
 			let key = tracks[songNumber].Media[0].Part[0].key;
 			let artist = '';
 			let title = tracks[songNumber].title;
-			const album = track[songnumber].parentTitle;
+			const album = tracks[songNumber].parentTitle;
 			if ('originalTitle' in tracks[songNumber]) {
 				artist = tracks[songNumber].originalTitle;
 			}

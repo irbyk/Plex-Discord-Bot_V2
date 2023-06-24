@@ -1,10 +1,9 @@
 {
 	"name": "plexbot",
-	"version": "2.4.3",
+	"version": "2.5.1",
 	"description": "a plex bot for discord",
 	"main": "index.js",
 	"scripts": {
-		"test": "echo \"Error: no test specified\" && exit 1",
 		"start": "node index.js"
 	},
 	"author": "danxfisher, irbyk",
