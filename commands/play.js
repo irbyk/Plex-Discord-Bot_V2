@@ -11,7 +11,7 @@ module.exports = {
 
         bot.findSong(query, bot.plexOffset, bot.plexPageSize, message);
       }
-      else if (bot.songQueue.length > 0) {
+      else if (bot.songQueue.length > 0 && !bot.isPlaying) {
         bot.playSong(message);
       }
       else {
